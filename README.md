@@ -33,7 +33,7 @@ Refer to `test_fixtures.php` as an example for how to run your fixtures once the
 1. Require this package:
    
     ```
-    composer require aklump/test-fixture:^0.0
+    composer require --dev aklump/test-fixture:^0.0
     ```
 
 ## Quick Start
