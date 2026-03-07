@@ -122,4 +122,16 @@ class FixtureRunnerTest extends TestCase {
 
     $this->assertEquals($metadata, FixtureWithTrait::$received);
   }
+
+  public function testRunEmptyFixturesOutputsMessage() {
+    $runner = new FixtureRunner([], []);
+    $this->expectOutputString("No fixtures found for execution. Check your classes for the #[AKlump\TestFixture\Fixture] attribute." . PHP_EOL);
+    $runner->run(FALSE);
+  }
+
+  public function testRunEmptyFixturesSilentOutputsNothing() {
+    $runner = new FixtureRunner([], []);
+    $this->expectOutputString("");
+    $runner->run(TRUE);
+  }
 }

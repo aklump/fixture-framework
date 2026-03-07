@@ -8,7 +8,7 @@ use AKlump\TestFixture\FixtureOrderer;
 
 class GetFixtures {
 
-  public function __invoke(string $vendor_dir = '', array $namespace_allow_list = [], bool $rebuild_cache = FALSE): array {
+  public function __invoke(string $vendor_dir = '', array $namespace_allow_list = [], bool $rebuild_cache = FALSE, bool $silent = FALSE): array {
     if (!is_dir($vendor_dir)) {
       throw new \InvalidArgumentException("Is not a directory: $vendor_dir");
     }
@@ -37,7 +37,7 @@ class GetFixtures {
       $cache_file = $cache_dir . DIRECTORY_SEPARATOR . "fixtures.$cache_key.cache.json";
     }
 
-    $discovery = new FixtureDiscovery($vendor_dir);
+    $discovery = (new FixtureDiscovery($vendor_dir))->setSilent($silent);
     $cache = new FixtureCache($cache_file, $vendor_dir);
 
     if ($rebuild_cache) {

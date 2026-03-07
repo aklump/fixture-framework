@@ -13,6 +13,11 @@ class FixtureRunner {
   }
 
   public function run(bool $silent = FALSE): void {
+    if (!$silent && empty($this->fixtures)) {
+      echo "No fixtures found for execution. Check your classes for the #[AKlump\TestFixture\Fixture] attribute." . PHP_EOL;
+
+      return;
+    }
     foreach ($this->fixtures as $fixture_record) {
       $class = $fixture_record['class'];
       $id = $fixture_record['id'];

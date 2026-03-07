@@ -12,12 +12,25 @@ class FixtureDiscovery {
 
   private string $vendorDir;
 
+  private bool $silent = true;
+
   public function __construct(string $vendor_dir) {
     $this->vendorDir = $vendor_dir;
   }
 
+  public function setSilent(bool $silent): self {
+    $this->silent = $silent;
+
+    return $this;
+  }
+
   public function discover(array $namespace_allow_list = []): array {
-    $classes = $this->getCandidateClasses();
+    $scanned_namespaces = [];
+    $classes = $this->getCandidateClasses($scanned_namespaces);
+    if (!$this->silent && !empty($scanned_namespaces)) {
+      sort($scanned_namespaces);
+      echo 'Scanning namespaces: ' . implode(', ', $scanned_namespaces) . PHP_EOL;
+    }
     $fixtures = [];
 
     foreach ($classes as $class) {
@@ -107,7 +120,7 @@ class FixtureDiscovery {
     return $dedupe ? array_values(array_unique($value)) : $value;
   }
 
-  private function getCandidateClasses(): array {
+  private function getCandidateClasses(array &$scanned_namespaces = []): array {
     $classes = [];
 
     // 1. From classmap
@@ -122,6 +135,7 @@ class FixtureDiscovery {
     if (file_exists($psr4_file)) {
       $psr4 = require $psr4_file;
       foreach ($psr4 as $namespace => $dirs) {
+        $scanned_namespaces[] = $namespace;
         foreach ($dirs as $dir) {
           if (is_dir($dir)) {
             $classes = array_merge($classes, $this->scanDirectoryForClasses($dir, $namespace));
@@ -129,6 +143,8 @@ class FixtureDiscovery {
         }
       }
     }
+
+    $scanned_namespaces = array_unique($scanned_namespaces);
 
     return array_unique($classes);
   }

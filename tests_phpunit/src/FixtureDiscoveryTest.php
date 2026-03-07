@@ -78,4 +78,18 @@ class FixtureDiscoveryTest extends TestCase {
     $this->assertArrayHasKey('dedupe', $fixtures);
     $this->assertEquals(['tag1', 'tag2'], $fixtures['dedupe']['tags']);
   }
+
+  public function testDiscoveryOutputsNamespacesWhenNotSilent() {
+    $discovery = new FixtureDiscovery(__DIR__ . '/../../vendor');
+    $discovery->setSilent(false);
+    $this->expectOutputRegex('/Scanning namespaces: /');
+    $discovery->discover(['AKlump\TestFixture\Tests\Fixtures\\']);
+  }
+
+  public function testDiscoveryOutputsNothingWhenSilent() {
+    $discovery = new FixtureDiscovery(__DIR__ . '/../../vendor');
+    $discovery->setSilent(true);
+    $this->expectOutputString('');
+    $discovery->discover(['AKlump\TestFixture\Tests\Fixtures\\']);
+  }
 }

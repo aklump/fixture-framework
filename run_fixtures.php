@@ -1,27 +1,28 @@
 #!/usr/bin/env php
 <?php
+// <readme id="run_fixtures_php">
+$vendor_dir = __DIR__ . '/vendor';
+require_once $vendor_dir . '/autoload.php';
 
-require_once __DIR__ . '/vendor/autoload.php';
-
-use AKlump\TestFixture\FixtureRunner;
-use AKlump\TestFixture\Helper\GetFixtures;
-
-$rebuild = in_array('--rebuild', $argv);
+$flush = in_array('--flush', $argv);
+$silent = in_array('--silent', $argv);
 
 try {
-  $ordered_fixtures = (new GetFixtures())($vendor_dir = __DIR__ . '/vendor', [], $rebuild);
+  $fixtures = (new \AKlump\TestFixture\Helper\GetFixtures())($vendor_dir, [
+      'MyApp\Tests\Fixture',
+  ], $flush, $silent);
 }
 catch (Exception $e) {
   echo "Error ordering fixtures: " . $e->getMessage() . "\n";
   exit(1);
 }
 
-$options = ['env' => 'test'];
-$runner = new FixtureRunner($ordered_fixtures, $options);
-
 try {
-  $runner->run();
+  $options = ['env' => 'test', 'drush' => 'lando nxdb_drush'];
+  $runner = new \AKlump\TestFixture\FixtureRunner($fixtures, $options);
+  $runner->run($silent);
 }
-catch (Exception $e) {
+catch (\Exception $e) {
   exit(1);
 }
+// </readme>
