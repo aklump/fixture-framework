@@ -43,9 +43,10 @@ We assume a tests directory called `e2e/`
 ```   
 
 3. Create your first fixture `class MyApp\Tests\Fixture\SomeFixture extends \AKlump\TestFixture\AbstractFixture`
-1. Be sure to use `#[Fixture(id: 'some_fixture')]`
-1. `mkdir bin/`
-4. Create the runner `bin/test_fixtures.php` and execute.
+4. Be sure to use `#[Fixture(id: 'some_fixture')]`
+5. `mkdir bin/`
+6. Create the runner `bin/test_fixtures.php` and execute.
+7. **Flush the cache** after creating new classes, e.g. `bin/test_fixtures.php --flush`
 
 ## Core Components
 
