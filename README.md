@@ -36,6 +36,27 @@ Refer to `run_fixtures.php` as an example for how to run your fixtures once they
     composer require aklump/test-fixture:^0.0
     ```
 
+## Quick Start
+
+We assume a tests directory called `e2e/`
+
+1. `mkdir e2e/src/Fixture/`
+2. Map it to a namespace in `composer.json`
+
+```json
+{
+  "autoload-dev": {
+    "psr-4": {
+      "MyApp\\Tests\\Fixture\\": "e2e/src/Fixture/"
+    }
+  }
+}
+```   
+3. Create your first fixture `class MyApp\Tests\Fixture\SomeFixture extends \AKlump\TestFixture\AbstractFixture`
+1. Be sure to use `#[Fixture(id: 'some_fixture')]`
+1. `mkdir e2e/bin/`
+4. Create the runner `e2e/bin/create_test_fixtures.php` and execute.
+
 ## Core Components
 
 ### 1. `FixtureInterface`
@@ -74,6 +95,7 @@ class UserRolesFixture implements FixtureInterface {
   // ...
 }
 ```
+
 ### 3. Accessing Metadata via `FixtureMetadataTrait`
 
 If you want your fixture to have access to its own metadata (e.g., to get the `id` or `tags` defined in the attribute), you can use the `FixtureMetadataTrait`.
@@ -96,7 +118,6 @@ class UserRolesFixture implements FixtureInterface {
   }
 }
 ```
-
 
 ### 4. `AbstractFixture` Class
 
@@ -158,7 +179,7 @@ class CustomOutputFixture extends AbstractFixture {
 
 ### Discovery
 
-`FixtureDiscovery` uses `vendor/composer/autoload_psr4.php` and `vendor/composer/autoload_classmap.php` to find classes implementing `FixtureInterface` with the `#[Fixture]` attribute.  You may hide a fixture by setting `discoverable: TRUE` in the `#[Fixture]` attribute.
+`FixtureDiscovery` uses `vendor/composer/autoload_psr4.php` and `vendor/composer/autoload_classmap.php` to find classes implementing `FixtureInterface` with the `#[Fixture]` attribute. You may hide a fixture by setting `discoverable: TRUE` in the `#[Fixture]` attribute.
 
 ### Ordering
 
@@ -169,9 +190,32 @@ class CustomOutputFixture extends AbstractFixture {
 To run all your fixtures create a script that does something like this:
 
 ```php
-$fixtures = (new GetFixtures())(__DIR__ . '/vendor/autoload.php');
-$options = ['env' => 'test'];
-(new FixtureRunner($fixtures, $options))->run();
+#!/usr/bin/env php
+<?php
+$vendor_dir = __DIR__ . '/vendor';
+require_once $vendor_dir . '/autoload.php';
+
+$flush = in_array('--flush', $argv);
+$silent = in_array('--silent', $argv);
+
+try {
+$fixtures = (new \AKlump\TestFixture\Helper\GetFixtures())($vendor_dir, [
+    'MyApp\Tests\Fixture',
+], $flush, $silent);
+}
+catch (Exception $e) {
+echo "Error ordering fixtures: " . $e->getMessage() . "\n";
+exit(1);
+}
+
+try {
+$options = ['env' => 'test', 'drush' => 'lando nxdb_drush'];
+$runner = new \AKlump\TestFixture\FixtureRunner($fixtures, $options);
+$runner->run($silent);
+}
+catch (\Exception $e) {
+exit(1);
+}
 ```
 
 ## Cache Management
