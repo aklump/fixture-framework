@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 // <readme id="run_fixtures_php">
-$vendor_dir = __DIR__ . '/vendor';
+$vendor_dir = __DIR__ . '/../vendor';
 require_once $vendor_dir . '/autoload.php';
 
 $flush = in_array('--flush', $argv);
