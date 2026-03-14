@@ -7,5 +7,5 @@ use AKlump\TestFixture\AbstractFixture;
 
 #[Fixture(id: '')]
 class EmptyIdFixture extends AbstractFixture {
-  public function setUp(array $options): void {}
+  public function setUp(): void {}
 }

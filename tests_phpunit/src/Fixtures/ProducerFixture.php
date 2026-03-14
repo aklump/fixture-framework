@@ -7,7 +7,7 @@ use AKlump\TestFixture\Fixture;
 
 #[Fixture(id: 'producer', weight: 1, discoverable: true)]
 class ProducerFixture extends AbstractFixture {
-  public function setUp(array $options): void {
+  public function setUp(): void {
     $this->runContext->set('producer.some_id', 999);
   }
 }

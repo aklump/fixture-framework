@@ -8,7 +8,7 @@ use AKlump\TestFixture\Fixture;
 #[Fixture(id: 'fixture_a', weight: 10, discoverable: true)]
 class FixtureA extends AbstractFixture {
   public static bool $called = false;
-  public function setUp(array $options): void {
+  public function setUp(): void {
     self::$called = true;
   }
 }

@@ -10,7 +10,7 @@ class MockFixture extends AbstractFixture {
   public static int $failureCount = 0;
   public static bool $shouldFail = false;
 
-  public function setUp(array $options): void {
+  public function setUp(): void {
     if (self::$shouldFail) {
       throw new FixtureException('Fixture failed');
     }

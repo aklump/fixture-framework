@@ -7,5 +7,5 @@ use AKlump\TestFixture\AbstractFixture;
 
 #[Fixture(id: 'non_string', after: [123])]
 class NonStringValueFixture extends AbstractFixture {
-  public function setUp(array $options): void {}
+  public function setUp(): void {}
 }

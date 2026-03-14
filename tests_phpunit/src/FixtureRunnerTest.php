@@ -3,6 +3,7 @@
 namespace AKlump\TestFixture\Tests;
 
 use AKlump\TestFixture\Exception\FixtureException;
+use AKlump\TestFixture\Exception\InvalidFixtureOptionsException;
 use AKlump\TestFixture\FixtureRunner;
 use AKlump\TestFixture\Tests\Fixtures\ConsumerFixture;
 use AKlump\TestFixture\Tests\Fixtures\FixtureA;
@@ -10,6 +11,7 @@ use AKlump\TestFixture\Tests\Fixtures\FixtureB;
 use AKlump\TestFixture\Tests\Fixtures\FixtureWithData;
 use AKlump\TestFixture\Tests\Fixtures\FixtureWithTrait;
 use AKlump\TestFixture\Tests\Fixtures\MockFixture;
+use AKlump\TestFixture\Tests\Fixtures\OptionsTestFixture;
 use AKlump\TestFixture\Tests\Fixtures\ProducerFixture;
 use PHPUnit\Framework\TestCase;
 
@@ -156,6 +158,40 @@ class FixtureRunnerTest extends TestCase {
     $runner->run(TRUE);
 
     $this->assertEquals(999, ConsumerFixture::$consumedValue);
+  }
+
+  public function testOptionsAreInjected() {
+    $options = ['env' => 'test', 'debug' => true];
+    $fixtures = [
+      [
+        'id' => 'options_test',
+        'class' => OptionsTestFixture::class,
+      ],
+    ];
+    $runner = new FixtureRunner($fixtures, $options);
+    $runner->run(TRUE);
+
+    $this->assertEquals($options, OptionsTestFixture::$receivedOptionsInSetUp);
+    $this->assertEquals($options, OptionsTestFixture::$receivedOptionsInOnSuccess);
+  }
+
+  /**
+   * @dataProvider provideInvalidOptions
+   */
+  public function testInvalidOptionsThrowException(array $options, string $expectedPath) {
+    $runner = new FixtureRunner([], $options);
+    $this->expectException(InvalidFixtureOptionsException::class);
+    $this->expectExceptionMessage(sprintf('Invalid value found at "%s".', $expectedPath));
+    $runner->run(TRUE);
+  }
+
+  public function provideInvalidOptions(): array {
+    return [
+      'object at top level' => [['client' => new \stdClass()], 'client'],
+      'object in nested array' => [['api' => ['client' => new \stdClass()]], 'api.client'],
+      'closure' => [['callback' => function () {}], 'callback'],
+      'numeric index' => [['servers' => [['host' => 'localhost'], new \stdClass()]], 'servers.1'],
+    ];
   }
 
   public function testRunContextIsolationBetweenRuns() {

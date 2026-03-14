@@ -8,6 +8,7 @@ abstract class AbstractFixture implements FixtureInterface {
 
   use FixtureMetadataTrait;
   use FixtureRunContextTrait;
+  use FixtureOptionsTrait;
 
   public function onSuccess(bool $silent = FALSE) {
     if (!$silent) {

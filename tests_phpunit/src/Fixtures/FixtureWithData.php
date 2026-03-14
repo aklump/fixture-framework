@@ -9,7 +9,7 @@ use AKlump\TestFixture\Fixture;
 class FixtureWithData extends AbstractFixture {
   public array $fixture;
   public static array $received = [];
-  public function setUp(array $options): void {
+  public function setUp(): void {
     if (isset($this->fixture)) {
       self::$received = $this->fixture;
     }

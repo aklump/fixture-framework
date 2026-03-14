@@ -7,6 +7,6 @@ use AKlump\TestFixture\Fixture;
 
 #[Fixture(id: 'fixture_a', weight: 20, discoverable: true)]
 class DuplicateFixture extends AbstractFixture {
-  public function setUp(array $options): void {
+  public function setUp(): void {
   }
 }

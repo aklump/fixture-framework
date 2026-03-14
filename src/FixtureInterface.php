@@ -6,7 +6,7 @@ use AKlump\TestFixture\Exception\FixtureException;
 
 interface FixtureInterface {
 
-  public function setUp(array $options): void;
+  public function setUp(): void;
 
   public function onSuccess(bool $silent = FALSE);
 
