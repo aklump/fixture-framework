@@ -3,8 +3,9 @@
 namespace AKlump\TestFixture\Tests;
 
 use AKlump\TestFixture\Exception\FixtureException;
-use AKlump\TestFixture\Exception\InvalidFixtureOptionsException;
+use AKlump\TestFixture\Exception\InvalidRunOptionsException;
 use AKlump\TestFixture\FixtureRunner;
+use AKlump\TestFixture\RunOptions;
 use AKlump\TestFixture\Tests\Fixtures\ConsumerFixture;
 use AKlump\TestFixture\Tests\Fixtures\FixtureA;
 use AKlump\TestFixture\Tests\Fixtures\FixtureB;
@@ -171,18 +172,19 @@ class FixtureRunnerTest extends TestCase {
     $runner = new FixtureRunner($fixtures, $options);
     $runner->run(TRUE);
 
-    $this->assertEquals($options, OptionsTestFixture::$receivedOptionsInSetUp);
-    $this->assertEquals($options, OptionsTestFixture::$receivedOptionsInOnSuccess);
+    $this->assertInstanceOf(RunOptions::class, OptionsTestFixture::$receivedOptionsInSetUp);
+    $this->assertEquals($options, OptionsTestFixture::$receivedOptionsInSetUp->all());
+    $this->assertInstanceOf(RunOptions::class, OptionsTestFixture::$receivedOptionsInOnSuccess);
+    $this->assertEquals($options, OptionsTestFixture::$receivedOptionsInOnSuccess->all());
   }
 
   /**
    * @dataProvider provideInvalidOptions
    */
   public function testInvalidOptionsThrowException(array $options, string $expectedPath) {
-    $runner = new FixtureRunner([], $options);
-    $this->expectException(InvalidFixtureOptionsException::class);
-    $this->expectExceptionMessage(sprintf('Invalid value found at "%s".', $expectedPath));
-    $runner->run(TRUE);
+    $this->expectException(InvalidRunOptionsException::class);
+    $this->expectExceptionMessage(sprintf('Run options must contain only null, scalar, or array values. Invalid value found at "%s".', $expectedPath));
+    new FixtureRunner([], $options);
   }
 
   public function provideInvalidOptions(): array {

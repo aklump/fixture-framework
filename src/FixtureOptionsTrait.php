@@ -18,8 +18,8 @@ trait FixtureOptionsTrait {
   /**
    * Global runtime options passed into FixtureRunner.
    *
-   * @var array
+   * @var \AKlump\TestFixture\RunOptions
    */
-  public array $options;
+  public RunOptions $options;
 
 }

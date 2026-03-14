@@ -58,7 +58,7 @@ Every fixture must implement this interface:
 namespace AKlump\TestFixture;
 
 interface FixtureInterface {
-  public function setUp(array $options): void;
+  public function setUp(): void;
   public function onSuccess(bool $silent = FALSE);
   public function onFailure(FixtureException $e, bool $silent = FALSE);
 }
@@ -103,7 +103,7 @@ class UserRolesFixture implements FixtureInterface {
 
   use FixtureMetadataTrait;
 
-  public function setUp(array $options): void {
+  public function setUp(): void {
     $id = $this->fixture['id'];
     // ...
   }
@@ -112,7 +112,7 @@ class UserRolesFixture implements FixtureInterface {
 
 ### 4. `AbstractFixture` Class
 
-The `AbstractFixture` class provides a base implementation of `FixtureInterface` and includes the `FixtureMetadataTrait`. Extending this class simplifies fixture development and allows for custom success/failure handling.
+The `AbstractFixture` class provides a base implementation of `FixtureInterface` and includes the `FixtureMetadataTrait`, `FixtureRunContextTrait`, and `FixtureOptionsTrait`. Extending this class simplifies fixture development and allows for custom success/failure handling.
 
 ```php
 use AKlump\TestFixture\AbstractFixture;
@@ -121,13 +121,39 @@ use AKlump\TestFixture\Fixture;
 #[Fixture(id: 'user_roles')]
 class UserRolesFixture extends AbstractFixture {
 
-  public function setUp(array $options): void {
+  public function setUp(): void {
     $id = $this->fixture['id'];
     // ...
   }
 
 }
 ```
+
+#### Injected Properties
+
+When using `AbstractFixture`, or the respective traits, the following properties are automatically injected into the fixture instance by the `FixtureRunner`:
+
+- `$this->fixture`: (array) Contains the fixture's metadata (id, weight, tags, etc.).
+- `$this->runContext`: (`\AKlump\TestFixture\RunContext`) A shared mutable runtime output across all fixtures in a single run.
+- `$this->options`: (`\AKlump\TestFixture\RunOptions`) A read-only API for the global run options.
+
+#### Global Run Options
+
+Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options`.
+
+**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
+
+```php
+// In your fixture:
+public function setUp(): void {
+  $env = $this->options->get('env');
+  $url = $this->options->require('base_url');
+  $all = $this->options->all();
+}
+```
+
+- `RunOptions` = read-only run input.
+- `RunContext` = shared mutable runtime output.
 
 #### Customizing Success and Failure
 
@@ -141,7 +167,7 @@ use AKlump\TestFixture\Exception\FixtureException;
 #[Fixture(id: 'custom_output')]
 class CustomOutputFixture extends AbstractFixture {
 
-  public function setUp(array $options): void {
+  public function setUp(): void {
     // ...
   }
 

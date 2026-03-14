@@ -4,9 +4,11 @@ namespace AKlump\TestFixture\Tests\Fixtures;
 
 use AKlump\TestFixture\AbstractFixture;
 
+use AKlump\TestFixture\RunOptions;
+
 class OptionsTestFixture extends AbstractFixture {
-  public static array $receivedOptionsInSetUp = [];
-  public static array $receivedOptionsInOnSuccess = [];
+  public static ?RunOptions $receivedOptionsInSetUp = NULL;
+  public static ?RunOptions $receivedOptionsInOnSuccess = NULL;
   
   public function setUp(): void {
     self::$receivedOptionsInSetUp = $this->options;
