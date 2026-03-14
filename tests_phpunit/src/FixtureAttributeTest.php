@@ -1,12 +1,13 @@
 <?php
 
-namespace AKlump\TestFixture\Tests;
+namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\TestFixture\Fixture;
+use AKlump\FixtureFramework\Fixture;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\TestFixture\Fixture
+ * @covers \AKlump\FixtureFramework\Fixture
+ * @uses \AKlump\FixtureFramework\Fixture
  */
 class FixtureAttributeTest extends TestCase {
 

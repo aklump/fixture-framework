@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\TestFixture\Exception;
+namespace AKlump\FixtureFramework\Exception;
 
 class InvalidRunContextKeyException extends FixtureException {
 

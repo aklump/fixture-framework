@@ -1,8 +1,8 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
-use AKlump\TestFixture\Exception\InvalidRunContextKeyException;
+use AKlump\FixtureFramework\Exception\InvalidRunContextKeyException;
 
 class RunContextValidator {
 

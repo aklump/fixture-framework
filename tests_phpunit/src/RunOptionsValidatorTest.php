@@ -1,11 +1,16 @@
 <?php
 
-namespace AKlump\TestFixture\Tests;
+namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\TestFixture\Exception\InvalidRunOptionsException;
-use AKlump\TestFixture\RunOptionsValidator;
+use AKlump\FixtureFramework\Exception\InvalidRunOptionsException;
+use AKlump\FixtureFramework\RunOptionsValidator;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @covers \AKlump\FixtureFramework\RunOptionsValidator
+ * @uses \AKlump\FixtureFramework\RunOptionsValidator
+ * @uses \AKlump\FixtureFramework\Exception\InvalidRunOptionsException
+ */
 class RunOptionsValidatorTest extends TestCase {
 
   private RunOptionsValidator $validator;

@@ -1,19 +1,19 @@
 <?php
 
-namespace AKlump\TestFixture\Tests;
+namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\TestFixture\RunContext;
-use AKlump\TestFixture\RunContextStore;
-use AKlump\TestFixture\RunContextValidator;
-use AKlump\TestFixture\Exception\MissingRunContextKeyException;
+use AKlump\FixtureFramework\RunContext;
+use AKlump\FixtureFramework\RunContextStore;
+use AKlump\FixtureFramework\RunContextValidator;
+use AKlump\FixtureFramework\Exception\MissingRunContextKeyException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\TestFixture\RunContext
- * @uses \AKlump\TestFixture\RunContextStore
- * @uses \AKlump\TestFixture\RunContextValidator
- * @uses \AKlump\TestFixture\Exception\MissingRunContextKeyException
- * @uses \AKlump\TestFixture\Exception\InvalidRunContextKeyException
+ * @covers \AKlump\FixtureFramework\RunContext
+ * @uses \AKlump\FixtureFramework\RunContextStore
+ * @uses \AKlump\FixtureFramework\RunContextValidator
+ * @uses \AKlump\FixtureFramework\Exception\MissingRunContextKeyException
+ * @uses \AKlump\FixtureFramework\Exception\InvalidRunContextKeyException
  */
 class RunContextTest extends TestCase {
 

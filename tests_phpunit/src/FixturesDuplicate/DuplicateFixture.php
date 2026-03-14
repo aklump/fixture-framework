@@ -1,9 +1,9 @@
 <?php
 
-namespace AKlump\TestFixture\Tests\FixturesDuplicate;
+namespace AKlump\FixtureFramework\Tests\FixturesDuplicate;
 
-use AKlump\TestFixture\AbstractFixture;
-use AKlump\TestFixture\Fixture;
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
 
 #[Fixture(id: 'fixture_a', weight: 20, discoverable: true)]
 class DuplicateFixture extends AbstractFixture {

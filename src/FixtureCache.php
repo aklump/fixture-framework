@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
 class FixtureCache {
 

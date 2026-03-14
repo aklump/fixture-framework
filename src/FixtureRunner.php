@@ -1,8 +1,8 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
-use AKlump\TestFixture\Exception\FixtureException;
+use AKlump\FixtureFramework\Exception\FixtureException;
 
 class FixtureRunner {
 
@@ -24,7 +24,7 @@ class FixtureRunner {
   public function run(bool $silent = FALSE): void {
 
     if (!$silent && empty($this->fixtures)) {
-      echo "No fixtures found for execution. Check your classes for the #[AKlump\TestFixture\Fixture] attribute." . PHP_EOL;
+      echo "No fixtures found for execution. Check your classes for the #[AKlump\FixtureFramework\Fixture] attribute." . PHP_EOL;
 
       return;
     }

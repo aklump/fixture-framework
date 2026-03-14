@@ -1,10 +1,10 @@
 <?php
 
-namespace AKlump\TestFixture\Helper;
+namespace AKlump\FixtureFramework\Helper;
 
-use AKlump\TestFixture\FixtureCache;
-use AKlump\TestFixture\FixtureDiscovery;
-use AKlump\TestFixture\FixtureOrderer;
+use AKlump\FixtureFramework\FixtureCache;
+use AKlump\FixtureFramework\FixtureDiscovery;
+use AKlump\FixtureFramework\FixtureOrderer;
 
 class GetFixtures {
 
@@ -37,7 +37,8 @@ class GetFixtures {
       $cache_file = $cache_dir . DIRECTORY_SEPARATOR . "fixtures.$cache_key.cache.json";
     }
 
-    $discovery = (new FixtureDiscovery($vendor_dir))->setSilent($silent);
+    $discovery = new FixtureDiscovery($vendor_dir);
+    $discovery->setSilent($silent);
     $cache = new FixtureCache($cache_file, $vendor_dir);
 
     if ($rebuild_cache) {
@@ -107,7 +108,7 @@ class GetFixtures {
   }
 
   private function normalizeNamespaces(array $namespace_allow_list) {
-    // @see \AKlump\TestFixture\FixtureDiscovery::discover
+    // @see \AKlump\FixtureFramework\FixtureDiscovery::discover
     return array_map(fn($namespace) => trim($namespace, '\\') . '\\', $namespace_allow_list);
   }
 }

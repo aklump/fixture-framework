@@ -1,8 +1,8 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
-use AKlump\TestFixture\Exception\InvalidRunOptionsException;
+use AKlump\FixtureFramework\Exception\InvalidRunOptionsException;
 
 /**
  * Validates run options recursively to ensure only plain data is used.
@@ -17,7 +17,7 @@ class RunOptionsValidator {
    * @param string $path
    *   The current traversal path.
    *
-   * @throws \AKlump\TestFixture\Exception\InvalidRunOptionsException
+   * @throws \AKlump\FixtureFramework\Exception\InvalidRunOptionsException
    */
   public function validate(array $options, string $path = ''): void {
     foreach ($options as $key => $value) {

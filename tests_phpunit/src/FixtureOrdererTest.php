@@ -1,13 +1,14 @@
 <?php
 
-namespace AKlump\TestFixture\Tests;
+namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\TestFixture\Exception\FixtureException;
-use AKlump\TestFixture\FixtureOrderer;
+use AKlump\FixtureFramework\Exception\FixtureException;
+use AKlump\FixtureFramework\FixtureOrderer;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\TestFixture\FixtureOrderer
+ * @covers \AKlump\FixtureFramework\FixtureOrderer
+ * @uses \AKlump\FixtureFramework\FixtureOrderer
  */
 class FixtureOrdererTest extends TestCase {
 
@@ -84,5 +85,47 @@ class FixtureOrdererTest extends TestCase {
     $this->expectExceptionMessage('must run before missing fixture "missing"');
     $orderer = new FixtureOrderer();
     $orderer->order(['a' => ['id' => 'a', 'after' => [], 'before' => ['missing']]]);
+  }
+
+  public function testDependencyWeightSorting() {
+    $orderer = new FixtureOrderer();
+    // 'a' depends on 'b' and 'c'.
+    // 'c' has lower weight than 'b'.
+    // They should be visited in weight order: 'c' then 'b'.
+    // Since 'a' is added last to $sorted in $visit, the order in $sorted will be 'c', 'b', 'a'.
+    $fixtures = [
+      'a' => ['id' => 'a', 'weight' => 10, 'after' => ['b', 'c'], 'before' => []],
+      'b' => ['id' => 'b', 'weight' => 5, 'after' => [], 'before' => []],
+      'c' => ['id' => 'c', 'weight' => 0, 'after' => [], 'before' => []],
+    ];
+
+    $ordered = $orderer->order($fixtures);
+    $ids = array_column($ordered, 'id');
+    $this->assertEquals(['c', 'b', 'a'], $ids);
+
+    // Test tie-break in dependency sorting
+    $fixtures = [
+      'a' => ['id' => 'a', 'weight' => 10, 'after' => ['c', 'b'], 'before' => []],
+      'b' => ['id' => 'b', 'weight' => 0, 'after' => [], 'before' => []],
+      'c' => ['id' => 'c', 'weight' => 0, 'after' => [], 'before' => []],
+    ];
+    $ordered = $orderer->order($fixtures);
+    $ids = array_column($ordered, 'id');
+    $this->assertEquals(['b', 'c', 'a'], $ids);
+  }
+
+  public function testVisitedNodeSkipping() {
+    $orderer = new FixtureOrderer();
+    // Both 'a' and 'b' depend on 'c'.
+    // 'c' should only be visited once.
+    $fixtures = [
+      'a' => ['id' => 'a', 'weight' => 0, 'after' => ['c'], 'before' => []],
+      'b' => ['id' => 'b', 'weight' => 1, 'after' => ['c'], 'before' => []],
+      'c' => ['id' => 'c', 'weight' => 0, 'after' => [], 'before' => []],
+    ];
+
+    $ordered = $orderer->order($fixtures);
+    $ids = array_column($ordered, 'id');
+    $this->assertEquals(['c', 'a', 'b'], $ids);
   }
 }

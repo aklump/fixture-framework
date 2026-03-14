@@ -1,9 +1,9 @@
 <?php
 
-namespace AKlump\TestFixture\Tests\Fixtures;
+namespace AKlump\FixtureFramework\Tests\Fixtures;
 
-use AKlump\TestFixture\AbstractFixture;
-use AKlump\TestFixture\Fixture;
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
 
 #[Fixture(id: 'fixture_with_data', weight: 42, tags: ['tag1', 'tag2'])]
 class FixtureWithData extends AbstractFixture {

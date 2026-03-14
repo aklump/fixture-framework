@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\TestFixture\Exception;
+namespace AKlump\FixtureFramework\Exception;
 
 /**
  * Exception thrown when run options contain invalid types.

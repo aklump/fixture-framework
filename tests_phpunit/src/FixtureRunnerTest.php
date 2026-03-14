@@ -1,33 +1,37 @@
 <?php
 
-namespace AKlump\TestFixture\Tests;
+namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\TestFixture\Exception\FixtureException;
-use AKlump\TestFixture\Exception\InvalidRunOptionsException;
-use AKlump\TestFixture\FixtureRunner;
-use AKlump\TestFixture\RunOptions;
-use AKlump\TestFixture\Tests\Fixtures\ConsumerFixture;
-use AKlump\TestFixture\Tests\Fixtures\FixtureA;
-use AKlump\TestFixture\Tests\Fixtures\FixtureB;
-use AKlump\TestFixture\Tests\Fixtures\FixtureWithData;
-use AKlump\TestFixture\Tests\Fixtures\FixtureWithTrait;
-use AKlump\TestFixture\Tests\Fixtures\MockFixture;
-use AKlump\TestFixture\Tests\Fixtures\OptionsTestFixture;
-use AKlump\TestFixture\Tests\Fixtures\ProducerFixture;
+use AKlump\FixtureFramework\Exception\FixtureException;
+use AKlump\FixtureFramework\Exception\InvalidRunOptionsException;
+use AKlump\FixtureFramework\FixtureRunner;
+use AKlump\FixtureFramework\RunOptions;
+use AKlump\FixtureFramework\Tests\Fixtures\ConsumerFixture;
+use AKlump\FixtureFramework\Tests\Fixtures\FixtureA;
+use AKlump\FixtureFramework\Tests\Fixtures\FixtureB;
+use AKlump\FixtureFramework\Tests\Fixtures\FixtureWithData;
+use AKlump\FixtureFramework\Tests\Fixtures\FixtureWithTrait;
+use AKlump\FixtureFramework\Tests\Fixtures\MockFixture;
+use AKlump\FixtureFramework\Tests\Fixtures\OptionsTestFixture;
+use AKlump\FixtureFramework\Tests\Fixtures\ProducerFixture;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\TestFixture\FixtureRunner
- * @uses \AKlump\TestFixture\AbstractFixture
- * @uses \AKlump\TestFixture\RunContext
- * @uses \AKlump\TestFixture\RunContextStore
- * @uses \AKlump\TestFixture\RunContextValidator
+ * @covers \AKlump\FixtureFramework\FixtureRunner
+ * @uses \AKlump\FixtureFramework\AbstractFixture
+ * @uses \AKlump\FixtureFramework\RunContext
+ * @uses \AKlump\FixtureFramework\RunContextStore
+ * @uses \AKlump\FixtureFramework\RunContextValidator
+ * @uses \AKlump\FixtureFramework\RunOptions
+ * @uses \AKlump\FixtureFramework\RunOptionsValidator
+ * @uses \AKlump\FixtureFramework\Exception\InvalidRunOptionsException
  */
 class FixtureRunnerTest extends TestCase {
 
   public function testOnSuccessAndOnFailure() {
     MockFixture::$successCount = 0;
     MockFixture::$failureCount = 0;
+    MockFixture::$shouldFail = false;
 
     $fixtures = [
       [
@@ -133,7 +137,7 @@ class FixtureRunnerTest extends TestCase {
 
   public function testRunEmptyFixturesOutputsMessage() {
     $runner = new FixtureRunner([], []);
-    $this->expectOutputString("No fixtures found for execution. Check your classes for the #[AKlump\TestFixture\Fixture] attribute." . PHP_EOL);
+    $this->expectOutputString("No fixtures found for execution. Check your classes for the #[AKlump\FixtureFramework\Fixture] attribute." . PHP_EOL);
     $runner->run(FALSE);
   }
 
@@ -213,5 +217,14 @@ class FixtureRunnerTest extends TestCase {
     // but the implementation shows a new store is created in run().
     $runner2->run(TRUE);
     $this->addToAssertionCount(1);
+  }
+
+  public function testConstructorAcceptsRunOptions() {
+    $options = new RunOptions(['foo' => 'bar']);
+    $runner = new FixtureRunner([], $options);
+    $reflection = new \ReflectionClass($runner);
+    $property = $reflection->getProperty('globalOptions');
+    $property->setAccessible(TRUE);
+    $this->assertSame($options, $property->getValue($runner));
   }
 }

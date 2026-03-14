@@ -1,8 +1,8 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
-use AKlump\TestFixture\Exception\RunContextKeyAlreadyExistsException;
+use AKlump\FixtureFramework\Exception\RunContextKeyAlreadyExistsException;
 
 class RunContextStore {
 

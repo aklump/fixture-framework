@@ -1,9 +1,9 @@
 <?php
 
-namespace AKlump\TestFixture\Tests\FixturesEmptyId;
+namespace AKlump\FixtureFramework\Tests\FixturesEmptyId;
 
-use AKlump\TestFixture\Fixture;
-use AKlump\TestFixture\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
+use AKlump\FixtureFramework\AbstractFixture;
 
 #[Fixture(id: '')]
 class EmptyIdFixture extends AbstractFixture {

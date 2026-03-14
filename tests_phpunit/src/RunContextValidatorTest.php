@@ -1,14 +1,15 @@
 <?php
 
-namespace AKlump\TestFixture\Tests;
+namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\TestFixture\RunContextValidator;
-use AKlump\TestFixture\Exception\InvalidRunContextKeyException;
+use AKlump\FixtureFramework\RunContextValidator;
+use AKlump\FixtureFramework\Exception\InvalidRunContextKeyException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\TestFixture\RunContextValidator
- * @uses \AKlump\TestFixture\Exception\InvalidRunContextKeyException
+ * @covers \AKlump\FixtureFramework\RunContextValidator
+ * @uses \AKlump\FixtureFramework\RunContextValidator
+ * @uses \AKlump\FixtureFramework\Exception\InvalidRunContextKeyException
  */
 class RunContextValidatorTest extends TestCase {
 

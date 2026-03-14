@@ -1,8 +1,8 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
-use AKlump\TestFixture\Exception\FixtureException;
+use AKlump\FixtureFramework\Exception\FixtureException;
 
 class FixtureOrderer {
 

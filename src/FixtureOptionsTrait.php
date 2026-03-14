@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
 /**
  * Trait to provide a global runtime options property to a fixture.
@@ -18,7 +18,7 @@ trait FixtureOptionsTrait {
   /**
    * Global runtime options passed into FixtureRunner.
    *
-   * @var \AKlump\TestFixture\RunOptions
+   * @var \AKlump\FixtureFramework\RunOptions
    */
   public RunOptions $options;
 

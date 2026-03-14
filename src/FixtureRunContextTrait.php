@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
 /**
  * Provides access to shared runtime values for the current fixture run.

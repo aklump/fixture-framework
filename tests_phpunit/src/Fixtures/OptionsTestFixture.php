@@ -1,10 +1,10 @@
 <?php
 
-namespace AKlump\TestFixture\Tests\Fixtures;
+namespace AKlump\FixtureFramework\Tests\Fixtures;
 
-use AKlump\TestFixture\AbstractFixture;
+use AKlump\FixtureFramework\AbstractFixture;
 
-use AKlump\TestFixture\RunOptions;
+use AKlump\FixtureFramework\RunOptions;
 
 class OptionsTestFixture extends AbstractFixture {
   public static ?RunOptions $receivedOptionsInSetUp = NULL;

@@ -1,7 +1,7 @@
 {
-  "name": "aklump/test-fixture",
-  "description": "Provides a standard for managing test fixtures regardless of framework.",
-  "homepage": "https://github.com/aklump/test-fixture",
+  "name": "aklump/fixture-framework",
+  "description": "A PHP framework for discoverable, ordered fixtures that prepare application state for testing, development, and repeatable setup workflows.",
+  "homepage": "https://github.com/aklump/fixture-framework",
   "authors": [
     {
       "name": "Aaron Klump",
@@ -13,14 +13,20 @@
     "php": ">=8.1",
     "ext-ctype": "*"
   },
+  "keywords": [
+    "fixtures",
+    "framework",
+    "testing",
+    "seeding"
+  ],
   "autoload": {
     "psr-4": {
-      "AKlump\\TestFixture\\": "src/"
+      "AKlump\\FixtureFramework\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "AKlump\\TestFixture\\Tests\\": "./tests_phpunit/src/"
+      "AKlump\\FixtureFramework\\Tests\\": "./tests_phpunit/src/"
     }
   },
   "require-dev": {

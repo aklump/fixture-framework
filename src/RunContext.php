@@ -1,8 +1,8 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
-use AKlump\TestFixture\Exception\MissingRunContextKeyException;
+use AKlump\FixtureFramework\Exception\MissingRunContextKeyException;
 
 class RunContext {
 

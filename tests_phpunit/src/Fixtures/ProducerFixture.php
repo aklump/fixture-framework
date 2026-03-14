@@ -1,9 +1,9 @@
 <?php
 
-namespace AKlump\TestFixture\Tests\Fixtures;
+namespace AKlump\FixtureFramework\Tests\Fixtures;
 
-use AKlump\TestFixture\AbstractFixture;
-use AKlump\TestFixture\Fixture;
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
 
 #[Fixture(id: 'producer', weight: 1, discoverable: true)]
 class ProducerFixture extends AbstractFixture {

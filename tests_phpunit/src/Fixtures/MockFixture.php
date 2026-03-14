@@ -1,9 +1,9 @@
 <?php
 
-namespace AKlump\TestFixture\Tests\Fixtures;
+namespace AKlump\FixtureFramework\Tests\Fixtures;
 
-use AKlump\TestFixture\AbstractFixture;
-use AKlump\TestFixture\Exception\FixtureException;
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Exception\FixtureException;
 
 class MockFixture extends AbstractFixture {
   public static int $successCount = 0;

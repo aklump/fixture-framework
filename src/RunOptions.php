@@ -1,8 +1,8 @@
 <?php
 
-namespace AKlump\TestFixture;
+namespace AKlump\FixtureFramework;
 
-use AKlump\TestFixture\Exception\MissingRunOptionException;
+use AKlump\FixtureFramework\Exception\MissingRunOptionException;
 
 /**
  * Read-only run options API.

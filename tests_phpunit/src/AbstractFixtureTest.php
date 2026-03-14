@@ -1,16 +1,18 @@
 <?php
 
-namespace AKlump\TestFixture\Tests;
+namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\TestFixture\AbstractFixture;
-use AKlump\TestFixture\Exception\FixtureException;
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Exception\FixtureException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\TestFixture\AbstractFixture
- * @covers \AKlump\TestFixture\FixtureMetadataTrait
- * @covers \AKlump\TestFixture\FixtureOptionsTrait
- * @covers \AKlump\TestFixture\FixtureRunContextTrait
+ * @covers \AKlump\FixtureFramework\AbstractFixture
+ * @covers \AKlump\FixtureFramework\FixtureMetadataTrait
+ * @covers \AKlump\FixtureFramework\FixtureOptionsTrait
+ * @covers \AKlump\FixtureFramework\FixtureRunContextTrait
+ * @uses \AKlump\FixtureFramework\AbstractFixture
+ * @uses \AKlump\FixtureFramework\Exception\FixtureException
  */
 class AbstractFixtureTest extends TestCase {
 

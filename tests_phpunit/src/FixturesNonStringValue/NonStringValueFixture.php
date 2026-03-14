@@ -1,9 +1,9 @@
 <?php
 
-namespace AKlump\TestFixture\Tests\FixturesNonStringValue;
+namespace AKlump\FixtureFramework\Tests\FixturesNonStringValue;
 
-use AKlump\TestFixture\Fixture;
-use AKlump\TestFixture\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
+use AKlump\FixtureFramework\AbstractFixture;
 
 #[Fixture(id: 'non_string', after: [123])]
 class NonStringValueFixture extends AbstractFixture {
