@@ -7,7 +7,7 @@ class GetReadMeCode {
   use CodeExtractionTrait;
 
   public function __invoke(string $book_path) {
-    $file = dirname($book_path) . '/test_fixtures.php';
+    $file = dirname($book_path) . '/install/setup-fixtures';
     if (!file_exists($file)) {
       throw new \InvalidArgumentException("Could not find $file");
     }

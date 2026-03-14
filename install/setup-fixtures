@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 // <readme id="run_fixtures_php">
-$vendor_dir = __DIR__ . '/../vendor';
+$vendor_dir = __DIR__ . '/../../vendor';
 require_once $vendor_dir . '/autoload.php';
 
 $flush = in_array('--flush', $argv);
@@ -18,11 +18,16 @@ catch (Exception $e) {
 }
 
 try {
-  $options = ['env' => 'test', 'drush' => 'lando nxdb_drush'];
+  $options = [
+      'env' => 'test',
+      'url' => 'https://website.com/',
+      'drush' => 'lando nxdb_drush',
+  ];
   $runner = new \AKlump\TestFixture\FixtureRunner($fixtures, $options);
   $runner->run($silent);
 }
 catch (\Exception $e) {
+  print $e->getMessage() . "\n";
   exit(1);
 }
 // </readme>

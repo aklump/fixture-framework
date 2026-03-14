@@ -13,8 +13,6 @@ When you need to do some setup (create users, content, etc) before running tests
 
 Each fixture class (`implements \AKlump\TestFixture\FixtureInterface`) should be responsible for a single test fixture, such as creating a user.
 
-Refer to `test_fixtures.php` as an example for how to run your fixtures once they are created.
-
 ## Key Features
 
 - **Attribute-based Metadata**: No docblock parsing; uses `#[Fixture]` for configuration.
@@ -36,7 +34,9 @@ We assume a tests directory called `e2e/`
 {
   "autoload-dev": {
     "psr-4": {
-      "MyApp\\Tests\\Fixture\\": "e2e/src/Fixture/"
+      "MyApp\\Tests\\": [
+        "e2e/src/"
+      ]
     }
   }
 }
@@ -45,8 +45,8 @@ We assume a tests directory called `e2e/`
 3. Create your first fixture `class MyApp\Tests\Fixture\SomeFixture extends \AKlump\TestFixture\AbstractFixture`
 4. Be sure to use `#[Fixture(id: 'some_fixture')]`
 5. `mkdir bin/`
-6. Create the runner `bin/test_fixtures.php` and execute.
-7. **Flush the cache** after creating new classes, e.g. `bin/test_fixtures.php --flush`
+6. Create (see below) the runner `bin/setup-fixtures`, changing `'MyApp\Tests\Fixture',` to the appropriate namespace.
+8. Execute while (**flushing the cache** after creating new classes), e.g. `bin/setup-fixtures --flush`
 
 ## Core Components
 
@@ -176,9 +176,9 @@ class CustomOutputFixture extends AbstractFixture {
 
 `FixtureOrderer` performs a topological sort based on `after`/`before` rules, tie-breaking with `weight` and lexicographical `id`.
 
-### Runner
+### Runner `setup-fixures`
 
-To run all your fixtures create a script (`test_fixtures.php`) that does something like this:
+To run all your fixtures create a script (`test_fixtures`) that does something like this:
 
 ```php
 #!/usr/bin/env php
