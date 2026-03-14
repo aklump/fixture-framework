@@ -7,6 +7,7 @@ use AKlump\TestFixture\Exception\FixtureException;
 abstract class AbstractFixture implements FixtureInterface {
 
   use FixtureMetadataTrait;
+  use FixtureRunContextTrait;
 
   public function onSuccess(bool $silent = FALSE) {
     if (!$silent) {

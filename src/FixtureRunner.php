@@ -18,6 +18,10 @@ class FixtureRunner {
 
       return;
     }
+
+    $store = new RunContextStore();
+    $validator = new RunContextValidator();
+
     foreach ($this->fixtures as $fixture_record) {
       $class = $fixture_record['class'];
       $id = $fixture_record['id'];
@@ -31,6 +35,9 @@ class FixtureRunner {
         $fixture = new $class();
         if (property_exists($fixture, 'fixture')) {
           $fixture->fixture = $fixture_record;
+        }
+        if (property_exists($fixture, 'runContext')) {
+          $fixture->runContext = new RunContext($id, $store, $validator);
         }
         $fixture->setUp($this->globalOptions);
         $fixture->onSuccess($silent);

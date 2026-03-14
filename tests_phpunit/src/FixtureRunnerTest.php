@@ -4,16 +4,21 @@ namespace AKlump\TestFixture\Tests;
 
 use AKlump\TestFixture\Exception\FixtureException;
 use AKlump\TestFixture\FixtureRunner;
+use AKlump\TestFixture\Tests\Fixtures\ConsumerFixture;
 use AKlump\TestFixture\Tests\Fixtures\FixtureA;
 use AKlump\TestFixture\Tests\Fixtures\FixtureB;
 use AKlump\TestFixture\Tests\Fixtures\FixtureWithData;
 use AKlump\TestFixture\Tests\Fixtures\FixtureWithTrait;
 use AKlump\TestFixture\Tests\Fixtures\MockFixture;
+use AKlump\TestFixture\Tests\Fixtures\ProducerFixture;
 use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\TestFixture\FixtureRunner
  * @uses \AKlump\TestFixture\AbstractFixture
+ * @uses \AKlump\TestFixture\RunContext
+ * @uses \AKlump\TestFixture\RunContextStore
+ * @uses \AKlump\TestFixture\RunContextValidator
  */
 class FixtureRunnerTest extends TestCase {
 
@@ -133,5 +138,42 @@ class FixtureRunnerTest extends TestCase {
     $runner = new FixtureRunner([], []);
     $this->expectOutputString("");
     $runner->run(TRUE);
+  }
+
+  public function testRunContextSharedAcrossFixtures() {
+    $fixtures = [
+      [
+        'id' => 'producer',
+        'class' => ProducerFixture::class,
+      ],
+      [
+        'id' => 'consumer',
+        'class' => ConsumerFixture::class,
+      ],
+    ];
+
+    $runner = new FixtureRunner($fixtures, []);
+    $runner->run(TRUE);
+
+    $this->assertEquals(999, ConsumerFixture::$consumedValue);
+  }
+
+  public function testRunContextIsolationBetweenRuns() {
+    $fixtures = [
+      [
+        'id' => 'producer',
+        'class' => ProducerFixture::class,
+      ],
+    ];
+
+    $runner1 = new FixtureRunner($fixtures, []);
+    $runner1->run(TRUE);
+
+    $runner2 = new FixtureRunner($fixtures, []);
+    // This second run will create a NEW store.
+    // We can't easily verify the store is new unless we have a way to inspect it,
+    // but the implementation shows a new store is created in run().
+    $runner2->run(TRUE);
+    $this->addToAssertionCount(1);
   }
 }

@@ -52,4 +52,12 @@ class AbstractFixtureTest extends TestCase {
     $fixture->setFixture($data);
     $this->assertEquals($data, $fixture->getFixture());
   }
+
+  public function testRunContextTraitProperty() {
+    $fixture = new class extends AbstractFixture {
+      public function setUp(array $options): void {}
+    };
+
+    $this->assertTrue(property_exists($fixture, 'runContext'));
+  }
 }
