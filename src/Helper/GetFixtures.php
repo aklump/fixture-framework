@@ -8,7 +8,7 @@ use AKlump\TestFixture\FixtureOrderer;
 
 class GetFixtures {
 
-  public function __invoke(string $vendor_dir = '', array $namespace_allow_list = [], bool $rebuild_cache = FALSE, bool $silent = FALSE): array {
+  public function __invoke(string $vendor_dir = '', array $namespace_allow_list = [], bool $rebuild_cache = FALSE, bool $silent = FALSE, string $filter = ''): array {
     if (!is_dir($vendor_dir)) {
       throw new \InvalidArgumentException("Is not a directory: $vendor_dir");
     }
@@ -51,8 +51,59 @@ class GetFixtures {
     }
 
     $orderer = new FixtureOrderer();
+    $fixtures = $orderer->order($fixtures);
 
-    return $orderer->order($fixtures);
+    if ($filter !== '') {
+      $filter = trim($filter);
+      $pattern = $this->toPregPattern($filter);
+
+      $fixtures = array_filter(
+        $fixtures,
+        static fn(array $fixture): bool => preg_match($pattern, $fixture['id']) === 1
+      );
+    }
+
+    return $fixtures;
+  }
+
+  private function toPregPattern(string $filter): string {
+    if ($filter === '') {
+      return '//';
+    }
+
+    if ($this->isDelimitedRegex($filter)) {
+      return $filter;
+    }
+
+    return '/' . str_replace('/', '\/', $filter) . '/';
+  }
+
+  private function isDelimitedRegex(string $pattern): bool {
+    $start = $pattern[0] ?? '';
+    if ($start === '' || ctype_alnum($start) || ctype_space($start) || $start === '\\') {
+      return FALSE;
+    }
+    $pairs = [
+      '(' => ')',
+      '[' => ']',
+      '{' => '}',
+      '<' => '>',
+    ];
+    $endDelimiter = $pairs[$start] ?? $start;
+    $length = strlen($pattern);
+    for ($i = $length - 1; $i > 0; --$i) {
+      if ($pattern[$i] !== $endDelimiter) {
+        continue;
+      }
+      if ($pattern[$i - 1] === '\\') {
+        continue;
+      }
+      $modifiers = substr($pattern, $i + 1);
+
+      return $modifiers === '' || preg_match('/^[imsxuADUJ]*$/', $modifiers) === 1;
+    }
+
+    return FALSE;
   }
 
   private function normalizeNamespaces(array $namespace_allow_list) {

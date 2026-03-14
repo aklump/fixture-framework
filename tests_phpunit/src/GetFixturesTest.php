@@ -73,4 +73,38 @@ class GetFixturesTest extends TestCase {
     putenv("TEST_FIXTURE_CACHE_FILE="); // Reset
     unlink($cacheFile);
   }
+
+  public function testInvokeWithFilter() {
+    $getFixtures = new GetFixtures();
+    $namespaces = ['AKlump\TestFixture\Tests\Fixtures\\'];
+
+    // Test exact match
+    $fixtures = $getFixtures($this->vendorDir, $namespaces, TRUE, TRUE, '/^fixture_a$/');
+    $ids = array_column($fixtures, 'id');
+    $this->assertCount(1, $ids);
+    $this->assertContains('fixture_a', $ids);
+
+    // Test regex match
+    $fixtures = $getFixtures($this->vendorDir, $namespaces, TRUE, TRUE, '/^fixture_.*$/');
+    $ids = array_column($fixtures, 'id');
+    $this->assertContains('fixture_a', $ids);
+    $this->assertContains('fixture_b', $ids);
+
+    // Test no match
+    $fixtures = $getFixtures($this->vendorDir, $namespaces, TRUE, TRUE, '/^non_existent$/');
+    $this->assertEmpty($fixtures);
+  }
+
+  public function testInvokeWithFilterDependenciesReturnsOnlyFiltered() {
+    $getFixtures = new GetFixtures();
+    $namespaces = ['AKlump\TestFixture\Tests\Fixtures\\'];
+
+    // fixture_b depends on fixture_a
+    // Since we filter AFTER ordering, it should NOT fail, even if fixture_a is filtered out.
+    $fixtures = $getFixtures($this->vendorDir, $namespaces, TRUE, TRUE, '/^fixture_b$/');
+    $ids = array_column($fixtures, 'id');
+    $this->assertCount(1, $ids);
+    $this->assertContains('fixture_b', $ids);
+    $this->assertNotContains('fixture_a', $ids);
+  }
 }

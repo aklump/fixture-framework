@@ -6,11 +6,18 @@ require_once $vendor_dir . '/autoload.php';
 
 $flush = in_array('--flush', $argv);
 $silent = in_array('--silent', $argv);
+$filter = '';
+foreach ($argv as $arg) {
+  if (str_starts_with($arg, '--filter=')) {
+    $filter = substr($arg, 9);
+    break;
+  }
+}
 
 try {
   $fixtures = (new \AKlump\TestFixture\Helper\GetFixtures())($vendor_dir, [
       'MyApp\Tests\Fixture',
-  ], $flush, $silent);
+  ], $flush, $silent, $filter);
 }
 catch (Exception $e) {
   echo "Error ordering fixtures: " . $e->getMessage() . "\n";
