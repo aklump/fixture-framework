@@ -13,7 +13,7 @@ class GetReadMeCode {
     }
     $content = file_get_contents($file);
 
-    return $this->extractReadMeSnippets($content)['run_fixtures_php'] ?? '';
+    return $this->extractReadMeSnippets($content)['setup-fixtures'] ?? '';
   }
 
 }

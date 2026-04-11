@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-// <readme id="run_fixtures_php">
+// <readme id="setup-fixtures">
 $vendor_dir = __DIR__ . '/../vendor';
 require_once $vendor_dir . '/autoload.php';
 

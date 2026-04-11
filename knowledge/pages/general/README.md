@@ -223,7 +223,7 @@ To run your fixtures, create a script such as `bin/setup-fixtures` that bootstra
 ```php
 #!/usr/bin/env php
 <?php
-{{ run_fixtures_php|raw }}
+{{ setup-fixtures|raw }}
 ```
 
 ## Cache Management
