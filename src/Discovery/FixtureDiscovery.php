@@ -1,11 +1,13 @@
 <?php
 
-namespace AKlump\FixtureFramework;
+namespace AKlump\FixtureFramework\Discovery;
 
 use AKlump\FixtureFramework\Exception\FixtureException;
-use ReflectionClass;
+use AKlump\FixtureFramework\Fixture;
+use AKlump\FixtureFramework\FixtureInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use ReflectionClass;
 use RegexIterator;
 
 class FixtureDiscovery {

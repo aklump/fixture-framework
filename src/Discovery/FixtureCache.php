@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\FixtureFramework;
+namespace AKlump\FixtureFramework\Discovery;
 
 class FixtureCache {
 

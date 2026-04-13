@@ -1,12 +1,8 @@
 <?php
 
-namespace AKlump\FixtureFramework\Helper;
+namespace AKlump\FixtureFramework\Discovery;
 
-use AKlump\FixtureFramework\FixtureCache;
-use AKlump\FixtureFramework\FixtureDiscovery;
-use AKlump\FixtureFramework\FixtureOrderer;
-
-class GetFixtures {
+class DiscoverFixtureDefinitions {
 
   public function __invoke(string $vendor_dir = '', array $namespace_allow_list = [], bool $rebuild_cache = FALSE, bool $silent = FALSE, string $filter = ''): array {
     if (!is_dir($vendor_dir)) {
@@ -42,29 +38,29 @@ class GetFixtures {
     $cache = new FixtureCache($cache_file, $vendor_dir);
 
     if ($rebuild_cache) {
-      $fixtures = $cache->rebuild($discovery, $namespace_allow_list);
+      $fixture_index = $cache->rebuild($discovery, $namespace_allow_list);
     }
     else {
-      $fixtures = $cache->get();
-      if ($fixtures === NULL) {
-        $fixtures = $cache->rebuild($discovery, $namespace_allow_list);
+      $fixture_index = $cache->get();
+      if ($fixture_index === NULL) {
+        $fixture_index = $cache->rebuild($discovery, $namespace_allow_list);
       }
     }
 
     $orderer = new FixtureOrderer();
-    $fixtures = $orderer->order($fixtures);
+    $fixture_index = $orderer->order($fixture_index);
 
     if ($filter !== '') {
       $filter = trim($filter);
       $pattern = $this->toPregPattern($filter);
 
-      $fixtures = array_filter(
-        $fixtures,
+      $fixture_index = array_filter(
+        $fixture_index,
         static fn(array $fixture): bool => preg_match($pattern, $fixture['id']) === 1
       );
     }
 
-    return $fixtures;
+    return $fixture_index;
   }
 
   private function toPregPattern(string $filter): string {

@@ -2,13 +2,12 @@
 
 namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\FixtureFramework\RunContextStore;
+use AKlump\FixtureFramework\Runtime\RunContextStore;
 use AKlump\FixtureFramework\Exception\RunContextKeyAlreadyExistsException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\RunContextStore
- * @uses \AKlump\FixtureFramework\RunContextStore
+ * @covers \AKlump\FixtureFramework\Runtime\RunContextStore
  * @uses \AKlump\FixtureFramework\Exception\RunContextKeyAlreadyExistsException
  */
 class RunContextStoreTest extends TestCase {

@@ -2,13 +2,12 @@
 
 namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\FixtureFramework\RunContextValidator;
+use AKlump\FixtureFramework\Runtime\RunContextValidator;
 use AKlump\FixtureFramework\Exception\InvalidRunContextKeyException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\RunContextValidator
- * @uses \AKlump\FixtureFramework\RunContextValidator
+ * @covers \AKlump\FixtureFramework\Runtime\RunContextValidator
  * @uses \AKlump\FixtureFramework\Exception\InvalidRunContextKeyException
  */
 class RunContextValidatorTest extends TestCase {

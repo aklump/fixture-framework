@@ -3,12 +3,12 @@
 namespace AKlump\FixtureFramework\Tests;
 
 use AKlump\FixtureFramework\Exception\InvalidRunOptionsException;
-use AKlump\FixtureFramework\RunOptionsValidator;
+use AKlump\FixtureFramework\Runtime\RunOptionsValidator;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\RunOptionsValidator
- * @uses \AKlump\FixtureFramework\RunOptionsValidator
+ * @covers \AKlump\FixtureFramework\Runtime\RunOptionsValidator
+ * @uses \AKlump\FixtureFramework\Runtime\RunOptionsValidator
  * @uses \AKlump\FixtureFramework\Exception\InvalidRunOptionsException
  */
 class RunOptionsValidatorTest extends TestCase {

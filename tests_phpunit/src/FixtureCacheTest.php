@@ -2,13 +2,13 @@
 
 namespace AKlump\FixtureFramework\Tests;
 
-use AKlump\FixtureFramework\FixtureCache;
-use AKlump\FixtureFramework\FixtureDiscovery;
+use AKlump\FixtureFramework\Discovery\FixtureCache;
+use AKlump\FixtureFramework\Discovery\FixtureDiscovery;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\FixtureCache
- * @uses   \AKlump\FixtureFramework\FixtureDiscovery
+ * @covers \AKlump\FixtureFramework\Discovery\FixtureCache
+ * @uses   \AKlump\FixtureFramework\Discovery\FixtureDiscovery
  */
 class FixtureCacheTest extends TestCase {
 

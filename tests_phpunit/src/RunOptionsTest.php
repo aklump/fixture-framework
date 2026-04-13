@@ -4,12 +4,12 @@ namespace AKlump\FixtureFramework\Tests;
 
 use AKlump\FixtureFramework\Exception\InvalidRunOptionsException;
 use AKlump\FixtureFramework\Exception\MissingRunOptionException;
-use AKlump\FixtureFramework\RunOptions;
+use AKlump\FixtureFramework\Runtime\RunOptions;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\RunOptions
- * @uses \AKlump\FixtureFramework\RunOptionsValidator
+ * @covers \AKlump\FixtureFramework\Runtime\RunOptions
+ * @uses \AKlump\FixtureFramework\Runtime\RunOptionsValidator
  * @uses \AKlump\FixtureFramework\Exception\MissingRunOptionException
  * @uses \AKlump\FixtureFramework\Exception\InvalidRunOptionsException
  */

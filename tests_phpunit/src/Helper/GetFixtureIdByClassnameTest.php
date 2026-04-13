@@ -38,12 +38,24 @@ class GetFixtureIdByClassnameTest extends TestCase {
 }
 
 abstract class AbstractFixtureForTest implements FixtureInterface {
+  public function id(): string {
+    return '';
+  }
+  public function __invoke(): void {
+  }
+  public function onSuccess(bool $silent = FALSE) {
+  }
+  public function onFailure(\AKlump\FixtureFramework\Exception\FixtureException $e, bool $silent = FALSE) {
+  }
 }
 
 class NotAFixture {
 }
 
 class FixtureWithoutAttribute implements FixtureInterface {
+  public function id(): string {
+    return '';
+  }
   public function __invoke(): void {
   }
   public function onSuccess(bool $silent = FALSE) {

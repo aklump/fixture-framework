@@ -3,9 +3,10 @@
 namespace AKlump\FixtureFramework\Tests;
 
 use AKlump\FixtureFramework\Exception\FixtureException;
-use AKlump\FixtureFramework\Exception\InvalidRunOptionsException;
-use AKlump\FixtureFramework\FixtureRunner;
-use AKlump\FixtureFramework\RunOptions;
+use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
+use AKlump\FixtureFramework\Runtime\FixtureRunner;
+use AKlump\FixtureFramework\Runtime\RunContextValidator;
+use AKlump\FixtureFramework\Runtime\RunOptions;
 use AKlump\FixtureFramework\Tests\Fixtures\ConsumerFixture;
 use AKlump\FixtureFramework\Tests\Fixtures\FixtureA;
 use AKlump\FixtureFramework\Tests\Fixtures\FixtureB;
@@ -17,30 +18,39 @@ use AKlump\FixtureFramework\Tests\Fixtures\ProducerFixture;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\FixtureRunner
+ * @covers \AKlump\FixtureFramework\Runtime\FixtureRunner
+ * @covers \AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder
  * @uses \AKlump\FixtureFramework\AbstractFixture
- * @uses \AKlump\FixtureFramework\RunContext
- * @uses \AKlump\FixtureFramework\RunContextStore
- * @uses \AKlump\FixtureFramework\RunContextValidator
- * @uses \AKlump\FixtureFramework\RunOptions
- * @uses \AKlump\FixtureFramework\RunOptionsValidator
+ * @uses \AKlump\FixtureFramework\Runtime\RunContext
+ * @uses \AKlump\FixtureFramework\Runtime\RunContextStore
+ * @uses \AKlump\FixtureFramework\Runtime\RunContextValidator
+ * @uses \AKlump\FixtureFramework\Runtime\RunOptions
+ * @uses \AKlump\FixtureFramework\Runtime\RunOptionsValidator
  * @uses \AKlump\FixtureFramework\Exception\InvalidRunOptionsException
+ * @uses \AKlump\FixtureFramework\Helper\FixtureInstantiator
  */
 class FixtureRunnerTest extends TestCase {
+
+  private function buildFixtures(array $fixture_index, array $options = []): array {
+    $builder = new FixtureCollectionBuilder($options, new RunContextValidator());
+
+    return $builder($fixture_index);
+  }
 
   public function testOnSuccessAndOnFailure() {
     MockFixture::$successCount = 0;
     MockFixture::$failureCount = 0;
     MockFixture::$shouldFail = false;
 
-    $fixtures = [
+    $index = [
       [
         'id' => 'mock_success',
         'class' => MockFixture::class,
       ],
     ];
+    $fixtures = $this->buildFixtures($index);
 
-    $runner = new FixtureRunner($fixtures, []);
+    $runner = new FixtureRunner($fixtures);
     $runner->run(TRUE);
 
     $this->assertEquals(1, MockFixture::$successCount);
@@ -59,14 +69,15 @@ class FixtureRunnerTest extends TestCase {
   }
 
   public function testOnFailureThrowsException() {
-    $fixtures = [
+    $index = [
       [
         'id' => 'mock_fail',
         'class' => MockFixture::class,
       ],
     ];
     MockFixture::$shouldFail = true;
-    $runner = new FixtureRunner($fixtures, []);
+    $fixtures = $this->buildFixtures($index);
+    $runner = new FixtureRunner($fixtures);
     $this->expectException(FixtureException::class);
     $runner->run(TRUE);
     MockFixture::$shouldFail = false;
@@ -76,7 +87,7 @@ class FixtureRunnerTest extends TestCase {
     FixtureA::$called = FALSE;
     FixtureB::$called = FALSE;
 
-    $fixtures = [
+    $index = [
       [
         'id' => 'fixture_a',
         'class' => FixtureA::class,
@@ -86,8 +97,9 @@ class FixtureRunnerTest extends TestCase {
         'class' => FixtureB::class,
       ],
     ];
+    $fixtures = $this->buildFixtures($index);
 
-    $runner = new FixtureRunner($fixtures, ['key' => 'value']);
+    $runner = new FixtureRunner($fixtures);
     $runner->run(TRUE);
 
     $this->assertTrue(FixtureA::$called);
@@ -95,13 +107,15 @@ class FixtureRunnerTest extends TestCase {
   }
 
   public function testRunVerboseOutput() {
-    $fixtures = [
+    $index = [
       [
         'id' => 'fixture_a',
         'class' => FixtureA::class,
       ],
     ];
-    $runner = new FixtureRunner($fixtures, []);
+    $fixtures = $this->buildFixtures($index);
+
+    $runner = new FixtureRunner($fixtures);
     $this->expectOutputString(sprintf('Running fixture "fixture_a" (%s)... %sDone.%s', FixtureA::class, PHP_EOL, PHP_EOL));
     $runner->run(FALSE);
   }
@@ -113,9 +127,10 @@ class FixtureRunnerTest extends TestCase {
       'weight' => 42,
       'tags' => ['tag1', 'tag2'],
     ];
-    $fixtures = [$metadata];
+    $index = [$metadata];
+    $fixtures = $this->buildFixtures($index);
 
-    $runner = new FixtureRunner($fixtures, []);
+    $runner = new FixtureRunner($fixtures);
     $runner->run(TRUE);
 
     $this->assertEquals($metadata, FixtureWithData::$received);
@@ -127,28 +142,29 @@ class FixtureRunnerTest extends TestCase {
       'class' => FixtureWithTrait::class,
       'weight' => 42,
     ];
-    $fixtures = [$metadata];
+    $index = [$metadata];
+    $fixtures = $this->buildFixtures($index);
 
-    $runner = new FixtureRunner($fixtures, []);
+    $runner = new FixtureRunner($fixtures);
     $runner->run(TRUE);
 
     $this->assertEquals($metadata, FixtureWithTrait::$received);
   }
 
   public function testRunEmptyFixturesOutputsMessage() {
-    $runner = new FixtureRunner([], []);
+    $runner = new FixtureRunner([]);
     $this->expectOutputString("No fixtures found for execution. Check your classes for the #[AKlump\FixtureFramework\Fixture] attribute." . PHP_EOL);
     $runner->run(FALSE);
   }
 
   public function testRunEmptyFixturesSilentOutputsNothing() {
-    $runner = new FixtureRunner([], []);
+    $runner = new FixtureRunner([]);
     $this->expectOutputString("");
     $runner->run(TRUE);
   }
 
   public function testRunContextSharedAcrossFixtures() {
-    $fixtures = [
+    $index = [
       [
         'id' => 'producer',
         'class' => ProducerFixture::class,
@@ -158,8 +174,9 @@ class FixtureRunnerTest extends TestCase {
         'class' => ConsumerFixture::class,
       ],
     ];
+    $fixtures = $this->buildFixtures($index);
 
-    $runner = new FixtureRunner($fixtures, []);
+    $runner = new FixtureRunner($fixtures);
     $runner->run(TRUE);
 
     $this->assertEquals(999, ConsumerFixture::$consumedValue);
@@ -167,13 +184,14 @@ class FixtureRunnerTest extends TestCase {
 
   public function testOptionsAreInjected() {
     $options = ['env' => 'test', 'debug' => true];
-    $fixtures = [
+    $index = [
       [
         'id' => 'options_test',
         'class' => OptionsTestFixture::class,
       ],
     ];
-    $runner = new FixtureRunner($fixtures, $options);
+    $fixtures = $this->buildFixtures($index, $options);
+    $runner = new FixtureRunner($fixtures);
     $runner->run(TRUE);
 
     $this->assertInstanceOf(RunOptions::class, OptionsTestFixture::$receivedOptionsInSetUp);
@@ -182,49 +200,20 @@ class FixtureRunnerTest extends TestCase {
     $this->assertEquals($options, OptionsTestFixture::$receivedOptionsInOnSuccess->all());
   }
 
-  /**
-   * @dataProvider provideInvalidOptions
-   */
-  public function testInvalidOptionsThrowException(array $options, string $expectedPath) {
-    $this->expectException(InvalidRunOptionsException::class);
-    $this->expectExceptionMessage(sprintf('Run options must contain only null, scalar, or array values. Invalid value found at "%s".', $expectedPath));
-    new FixtureRunner([], $options);
-  }
-
-  public function provideInvalidOptions(): array {
-    return [
-      'object at top level' => [['client' => new \stdClass()], 'client'],
-      'object in nested array' => [['api' => ['client' => new \stdClass()]], 'api.client'],
-      'closure' => [['callback' => function () {}], 'callback'],
-      'numeric index' => [['servers' => [['host' => 'localhost'], new \stdClass()]], 'servers.1'],
-    ];
-  }
-
   public function testRunContextIsolationBetweenRuns() {
-    $fixtures = [
+    $index = [
       [
         'id' => 'producer',
         'class' => ProducerFixture::class,
       ],
     ];
-
-    $runner1 = new FixtureRunner($fixtures, []);
+    $fixtures1 = $this->buildFixtures($index);
+    $runner1 = new FixtureRunner($fixtures1);
     $runner1->run(TRUE);
 
-    $runner2 = new FixtureRunner($fixtures, []);
-    // This second run will create a NEW store.
-    // We can't easily verify the store is new unless we have a way to inspect it,
-    // but the implementation shows a new store is created in run().
+    $fixtures2 = $this->buildFixtures($index);
+    $runner2 = new FixtureRunner($fixtures2);
     $runner2->run(TRUE);
     $this->addToAssertionCount(1);
-  }
-
-  public function testConstructorAcceptsRunOptions() {
-    $options = new RunOptions(['foo' => 'bar']);
-    $runner = new FixtureRunner([], $options);
-    $reflection = new \ReflectionClass($runner);
-    $property = $reflection->getProperty('globalOptions');
-    $property->setAccessible(TRUE);
-    $this->assertSame($options, $property->getValue($runner));
   }
 }

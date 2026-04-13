@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\FixtureFramework;
+namespace AKlump\FixtureFramework\Runtime;
 
 use AKlump\FixtureFramework\Exception\MissingRunContextKeyException;
 

@@ -1,6 +1,8 @@
 <?php
 
-namespace AKlump\FixtureFramework;
+namespace AKlump\FixtureFramework\Traits;
+
+use AKlump\FixtureFramework\Runtime\RunContext;
 
 /**
  * Provides access to shared runtime values for the current fixture run.

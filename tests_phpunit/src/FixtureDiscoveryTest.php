@@ -2,12 +2,12 @@
 
 namespace AKlump\FixtureFramework\Tests;
 
+use AKlump\FixtureFramework\Discovery\FixtureDiscovery;
 use AKlump\FixtureFramework\Exception\FixtureException;
-use AKlump\FixtureFramework\FixtureDiscovery;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\FixtureDiscovery
+ * @covers \AKlump\FixtureFramework\Discovery\FixtureDiscovery
  * @uses \AKlump\FixtureFramework\Fixture
  */
 class FixtureDiscoveryTest extends TestCase {

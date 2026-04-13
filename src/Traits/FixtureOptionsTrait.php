@@ -1,6 +1,8 @@
 <?php
 
-namespace AKlump\FixtureFramework;
+namespace AKlump\FixtureFramework\Traits;
+
+use AKlump\FixtureFramework\Runtime\RunOptions;
 
 /**
  * Trait to provide a global runtime options property to a fixture.

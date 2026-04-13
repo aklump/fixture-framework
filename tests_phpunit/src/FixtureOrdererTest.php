@@ -2,13 +2,13 @@
 
 namespace AKlump\FixtureFramework\Tests;
 
+use AKlump\FixtureFramework\Discovery\FixtureOrderer;
 use AKlump\FixtureFramework\Exception\FixtureException;
-use AKlump\FixtureFramework\FixtureOrderer;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\FixtureOrderer
- * @uses \AKlump\FixtureFramework\FixtureOrderer
+ * @covers \AKlump\FixtureFramework\Discovery\FixtureOrderer
+ * @uses \AKlump\FixtureFramework\Discovery\FixtureOrderer
  */
 class FixtureOrdererTest extends TestCase {
 

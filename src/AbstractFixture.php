@@ -3,12 +3,19 @@
 namespace AKlump\FixtureFramework;
 
 use AKlump\FixtureFramework\Exception\FixtureException;
+use AKlump\FixtureFramework\Traits\FixtureMetadataTrait;
+use AKlump\FixtureFramework\Traits\FixtureRunContextTrait;
+use AKlump\FixtureFramework\Traits\FixtureOptionsTrait;
 
 abstract class AbstractFixture implements FixtureInterface {
 
   use FixtureMetadataTrait;
   use FixtureRunContextTrait;
   use FixtureOptionsTrait;
+
+  public function id(): string {
+    return $this->fixture['id'] ?? '';
+  }
 
   public function onSuccess(bool $silent = FALSE) {
     if (!$silent) {

@@ -15,7 +15,7 @@ foreach ($argv as $arg) {
 }
 
 try {
-  $fixtures = (new \AKlump\FixtureFramework\Helper\GetFixtures())($vendor_dir, [
+  $definitions = (new \AKlump\FixtureFramework\Discovery\DiscoverFixtureDefinitions())($vendor_dir, [
       'MyApp\Tests\Fixture',
   ], $flush, $silent, $filter);
 }
@@ -30,7 +30,9 @@ try {
       'url' => 'https://website.com/',
       'drush' => 'lando nxdb_drush',
   ];
-  $runner = new \AKlump\FixtureFramework\FixtureRunner($fixtures, $options);
+  $validator = new \AKlump\FixtureFramework\Runtime\RunContextValidator();
+  $fixtures = (new \AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder($options, $validator))($definitions);
+  $runner = new \AKlump\FixtureFramework\Runtime\FixtureRunner($fixtures);
   $runner->run($silent);
 }
 catch (\Exception $e) {

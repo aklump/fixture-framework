@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\FixtureFramework;
+namespace AKlump\FixtureFramework\Discovery;
 
 use AKlump\FixtureFramework\Exception\FixtureException;
 
@@ -62,6 +62,9 @@ class FixtureOrderer {
       $dependencies = $edges[$node] ?? [];
       // To keep it deterministic, sort dependencies too
       usort($dependencies, function($a, $b) use ($fixtures) {
+        if (!isset($fixtures[$a]) || !isset($fixtures[$b])) {
+          return $a <=> $b;
+        }
         if ($fixtures[$a]['weight'] !== $fixtures[$b]['weight']) {
           return $fixtures[$a]['weight'] <=> $fixtures[$b]['weight'];
         }

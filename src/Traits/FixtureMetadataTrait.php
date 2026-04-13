@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\FixtureFramework;
+namespace AKlump\FixtureFramework\Traits;
 
 /**
  * Trait to provide a common property for accessing fixture metadata.

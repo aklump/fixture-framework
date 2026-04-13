@@ -4,7 +4,7 @@ namespace AKlump\FixtureFramework\Tests\Fixtures;
 
 use AKlump\FixtureFramework\AbstractFixture;
 
-use AKlump\FixtureFramework\RunOptions;
+use AKlump\FixtureFramework\Runtime\RunOptions;
 
 class OptionsTestFixture extends AbstractFixture {
   public static ?RunOptions $receivedOptionsInSetUp = NULL;

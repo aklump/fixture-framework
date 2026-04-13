@@ -99,7 +99,7 @@ This trait adds a public `array $fixture` property to your class. The `FixtureRu
 ```php
 use AKlump\FixtureFramework\FixtureInterface;
 use AKlump\FixtureFramework\Fixture;
-use AKlump\FixtureFramework\FixtureMetadataTrait;
+use AKlump\FixtureFramework\Traits\FixtureMetadataTrait;
 
 #[Fixture(id: 'user_roles')]
 class UserRolesFixture implements FixtureInterface {
