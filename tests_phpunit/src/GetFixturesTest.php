@@ -7,10 +7,10 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\FixtureFramework\Helper\GetFixtures
- * @uses \AKlump\FixtureFramework\FixtureCache
- * @uses \AKlump\FixtureFramework\FixtureDiscovery
- * @uses \AKlump\FixtureFramework\FixtureOrderer
- * @uses \AKlump\FixtureFramework\Fixture
+ * @uses   \AKlump\FixtureFramework\FixtureCache
+ * @uses   \AKlump\FixtureFramework\FixtureDiscovery
+ * @uses   \AKlump\FixtureFramework\FixtureOrderer
+ * @uses   \AKlump\FixtureFramework\Fixture
  */
 class GetFixturesTest extends TestCase {
 

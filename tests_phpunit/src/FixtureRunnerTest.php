@@ -102,7 +102,7 @@ class FixtureRunnerTest extends TestCase {
       ],
     ];
     $runner = new FixtureRunner($fixtures, []);
-    $this->expectOutputString(sprintf('Executing fixture "fixture_a" (%s)... %sDone.%s', FixtureA::class, PHP_EOL, PHP_EOL));
+    $this->expectOutputString(sprintf('Running fixture "fixture_a" (%s)... %sDone.%s', FixtureA::class, PHP_EOL, PHP_EOL));
     $runner->run(FALSE);
   }
 

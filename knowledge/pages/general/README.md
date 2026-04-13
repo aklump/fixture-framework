@@ -59,7 +59,7 @@ Every fixture must implement this interface:
 namespace AKlump\FixtureFramework;
 
 interface FixtureInterface {
-public function setUp(): void;
+public function __invoke(): void;
 public function onSuccess(bool $silent = FALSE);
 public function onFailure(FixtureException $e, bool $silent = FALSE);
 }
@@ -94,7 +94,7 @@ class UserRolesFixture implements FixtureInterface {
 
 If you want your fixture to have access to its own metadata (for example, to get the `id` or `tags` defined in the attribute), you can use the `FixtureMetadataTrait`.
 
-This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `setUp()`.
+This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `__invoke()`.
 
 ```php
 use AKlump\FixtureFramework\FixtureInterface;
@@ -106,7 +106,7 @@ class UserRolesFixture implements FixtureInterface {
 
 use FixtureMetadataTrait;
 
-public function setUp(): void {
+public function __invoke(): void {
 $id = $this->fixture['id'];
 // ...
 }
@@ -124,7 +124,7 @@ use AKlump\FixtureFramework\Fixture;
 #[Fixture(id: 'user_roles')]
 class UserRolesFixture extends AbstractFixture {
 
-public function setUp(): void {
+public function __invoke(): void {
 $id = $this->fixture['id'];
 // ...
 }
@@ -147,7 +147,7 @@ Run options are provided to the `FixtureRunner` as an array or a `RunOptions` ob
 **Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
 
 ```php
-public function setUp(): void {
+public function __invoke(): void {
 $env = $this->options->get('env');
 $url = $this->options->require('base_url');
 $all = $this->options->all();
@@ -169,7 +169,7 @@ use AKlump\FixtureFramework\Exception\FixtureException;
 #[Fixture(id: 'custom_output')]
 class CustomOutputFixture extends AbstractFixture {
 
-  public function setUp(): void {
+  public function __invoke(): void {
     // ...
   }
 

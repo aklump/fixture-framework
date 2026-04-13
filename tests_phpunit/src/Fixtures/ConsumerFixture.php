@@ -8,7 +8,7 @@ use AKlump\FixtureFramework\Fixture;
 #[Fixture(id: 'consumer', after: ['producer'], discoverable: true)]
 class ConsumerFixture extends AbstractFixture {
   public static mixed $consumedValue = null;
-  public function setUp(): void {
+  public function __invoke(): void {
     self::$consumedValue = $this->runContext->require('producer.some_id');
   }
 }

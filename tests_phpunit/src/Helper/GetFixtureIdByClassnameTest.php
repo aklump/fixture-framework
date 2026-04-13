@@ -44,7 +44,7 @@ class NotAFixture {
 }
 
 class FixtureWithoutAttribute implements FixtureInterface {
-  public function setUp(): void {
+  public function __invoke(): void {
   }
   public function onSuccess(bool $silent = FALSE) {
   }

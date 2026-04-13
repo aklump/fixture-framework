@@ -37,7 +37,7 @@ class FixtureRunner {
       $id = $fixture_record['id'];
 
       if (!$silent) {
-        echo sprintf('Executing fixture "%s" (%s)... ', $id, $class) . PHP_EOL;
+        echo sprintf('Running fixture "%s" (%s)... ', $id, $class) . PHP_EOL;
       }
 
       try {

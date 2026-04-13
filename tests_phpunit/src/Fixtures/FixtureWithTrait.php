@@ -13,7 +13,7 @@ class FixtureWithTrait extends AbstractFixture {
 
   public static array $received = [];
 
-  public function setUp(): void {
+  public function __invoke(): void {
     self::$received = $this->fixture;
   }
 }

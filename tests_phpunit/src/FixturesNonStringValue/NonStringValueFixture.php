@@ -7,5 +7,5 @@ use AKlump\FixtureFramework\AbstractFixture;
 
 #[Fixture(id: 'non_string', after: [123])]
 class NonStringValueFixture extends AbstractFixture {
-  public function setUp(): void {}
+  public function __invoke(): void {}
 }

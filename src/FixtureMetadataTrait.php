@@ -6,7 +6,7 @@ namespace AKlump\FixtureFramework;
  * Trait to provide a common property for accessing fixture metadata.
  *
  * Use this trait in your Fixture classes to have the metadata automatically
- * populated by the FixtureRunner before the setUp() method is called.
+ * populated by the FixtureRunner before the __invoke() method is called.
  */
 trait FixtureMetadataTrait {
 

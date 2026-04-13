@@ -18,7 +18,7 @@ class AbstractFixtureTest extends TestCase {
 
   public function testOnSuccessPrintsDoneByDefault() {
     $fixture = new class extends AbstractFixture {
-      public function setUp(): void {}
+      public function __invoke(): void {}
     };
 
     $this->expectOutputString("Done." . PHP_EOL);
@@ -27,7 +27,7 @@ class AbstractFixtureTest extends TestCase {
 
   public function testOnSuccessIsSilentWhenRequested() {
     $fixture = new class extends AbstractFixture {
-      public function setUp(): void {}
+      public function __invoke(): void {}
     };
 
     $this->expectOutputString("");
@@ -36,7 +36,7 @@ class AbstractFixtureTest extends TestCase {
 
   public function testOnFailureThrowsException() {
     $fixture = new class extends AbstractFixture {
-      public function setUp(): void {}
+      public function __invoke(): void {}
     };
 
     $e = new FixtureException("Test failure");
@@ -47,7 +47,7 @@ class AbstractFixtureTest extends TestCase {
 
   public function testMetadataTraitProperty() {
     $fixture = new class extends AbstractFixture {
-      public function setUp(): void {}
+      public function __invoke(): void {}
       public function getFixture() { return $this->fixture; }
       public function setFixture(array $f) { $this->fixture = $f; }
     };
@@ -59,7 +59,7 @@ class AbstractFixtureTest extends TestCase {
 
   public function testRunContextTraitProperty() {
     $fixture = new class extends AbstractFixture {
-      public function setUp(): void {}
+      public function __invoke(): void {}
     };
 
     $this->assertTrue(property_exists($fixture, 'runContext'));
@@ -67,7 +67,7 @@ class AbstractFixtureTest extends TestCase {
 
   public function testOptionsTraitProperty() {
     $fixture = new class extends AbstractFixture {
-      public function setUp(): void {}
+      public function __invoke(): void {}
     };
 
     $this->assertTrue(property_exists($fixture, 'options'));
@@ -75,7 +75,7 @@ class AbstractFixtureTest extends TestCase {
 
   public function testMetadataTraitPropertyExists() {
     $fixture = new class extends AbstractFixture {
-      public function setUp(): void {}
+      public function __invoke(): void {}
     };
 
     $this->assertTrue(property_exists($fixture, 'fixture'));

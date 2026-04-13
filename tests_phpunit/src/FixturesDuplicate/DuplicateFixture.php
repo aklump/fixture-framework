@@ -7,6 +7,6 @@ use AKlump\FixtureFramework\Fixture;
 
 #[Fixture(id: 'fixture_a', weight: 20, discoverable: true)]
 class DuplicateFixture extends AbstractFixture {
-  public function setUp(): void {
+  public function __invoke(): void {
   }
 }

@@ -6,7 +6,7 @@ use AKlump\FixtureFramework\Exception\FixtureException;
 
 interface FixtureInterface {
 
-  public function setUp(): void;
+  public function __invoke(): void;
 
   public function onSuccess(bool $silent = FALSE);
 

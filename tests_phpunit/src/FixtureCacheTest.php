@@ -8,11 +8,12 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \AKlump\FixtureFramework\FixtureCache
- * @uses \AKlump\FixtureFramework\FixtureDiscovery
+ * @uses   \AKlump\FixtureFramework\FixtureDiscovery
  */
 class FixtureCacheTest extends TestCase {
 
   private string $cacheFile;
+
   private string $vendorDir;
 
   protected function setUp(): void {
