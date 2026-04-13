@@ -3,6 +3,7 @@
 namespace AKlump\FixtureFramework;
 
 use AKlump\FixtureFramework\Exception\FixtureException;
+use AKlump\FixtureFramework\Helper\FixtureInstantiator;
 
 class FixtureRunner {
 
@@ -41,18 +42,8 @@ class FixtureRunner {
       }
 
       try {
-        /** @var FixtureInterface $fixture */
-        $fixture = new $class();
-        if (property_exists($fixture, 'fixture')) {
-          $fixture->fixture = $fixture_record;
-        }
-        if (property_exists($fixture, 'runContext')) {
-          $fixture->runContext = new RunContext($id, $store, $validator);
-        }
-        if (property_exists($fixture, 'options')) {
-          $fixture->options = $this->globalOptions;
-        }
-        $fixture->setUp();
+        $fixture = (new FixtureInstantiator())($fixture_record, $this->globalOptions, $store, $validator);
+        $fixture->__invoke();
         $fixture->onSuccess($silent);
       }
       catch (FixtureException $e) {
