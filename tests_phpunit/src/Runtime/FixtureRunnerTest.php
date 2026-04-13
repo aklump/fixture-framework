@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\FixtureFramework\Tests;
+namespace AKlump\FixtureFramework\Tests\Runtime;
 
 use AKlump\FixtureFramework\Exception\FixtureException;
 use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;

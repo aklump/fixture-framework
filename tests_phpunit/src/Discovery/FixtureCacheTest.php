@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\FixtureFramework\Tests;
+namespace AKlump\FixtureFramework\Tests\Discovery;
 
 use AKlump\FixtureFramework\Discovery\FixtureCache;
 use AKlump\FixtureFramework\Discovery\FixtureDiscovery;
@@ -18,7 +18,7 @@ class FixtureCacheTest extends TestCase {
 
   protected function setUp(): void {
     $this->cacheFile = tempnam(sys_get_temp_dir(), 'fixture_cache_test');
-    $this->vendorDir = __DIR__ . '/../../vendor';
+    $this->vendorDir = __DIR__ . '/../../../vendor';
   }
 
   protected function tearDown(): void {

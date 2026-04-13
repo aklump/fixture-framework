@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\FixtureFramework\Tests;
+namespace AKlump\FixtureFramework\Tests\Discovery;
 
 use AKlump\FixtureFramework\Discovery\DiscoverFixtureDefinitions;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +17,7 @@ class DiscoverFixtureDefinitionsTest extends TestCase {
   private string $vendorDir;
 
   protected function setUp(): void {
-    $this->vendorDir = __DIR__ . '/../../vendor';
+    $this->vendorDir = __DIR__ . '/../../../vendor';
     // Clear temp files created by DiscoverFixtureDefinitions if possible,
     // but DiscoverFixtureDefinitions uses sys_get_temp_dir() and sha1 of vendor path.
   }

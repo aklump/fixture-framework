@@ -1,6 +1,6 @@
 <?php
 
-namespace AKlump\FixtureFramework\Tests;
+namespace AKlump\FixtureFramework\Tests\Discovery;
 
 use AKlump\FixtureFramework\Discovery\FixtureOrderer;
 use AKlump\FixtureFramework\Exception\FixtureException;
