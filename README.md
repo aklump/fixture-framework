@@ -70,7 +70,7 @@ Every fixture must implement this interface:
 namespace AKlump\FixtureFramework;
 
 interface FixtureInterface {
-public function setUp(): void;
+public function __invoke(): void;
 public function onSuccess(bool $silent = FALSE);
 public function onFailure(FixtureException $e, bool $silent = FALSE);
 }
@@ -105,19 +105,19 @@ class UserRolesFixture implements FixtureInterface {
 
 If you want your fixture to have access to its own metadata (for example, to get the `id` or `tags` defined in the attribute), you can use the `FixtureMetadataTrait`.
 
-This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `setUp()`.
+This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `__invoke()`.
 
 ```php
 use AKlump\FixtureFramework\FixtureInterface;
 use AKlump\FixtureFramework\Fixture;
-use AKlump\FixtureFramework\FixtureMetadataTrait;
+use AKlump\FixtureFramework\Traits\FixtureMetadataTrait;
 
 #[Fixture(id: 'user_roles')]
 class UserRolesFixture implements FixtureInterface {
 
 use FixtureMetadataTrait;
 
-public function setUp(): void {
+public function __invoke(): void {
 $id = $this->fixture['id'];
 // ...
 }
@@ -135,7 +135,7 @@ use AKlump\FixtureFramework\Fixture;
 #[Fixture(id: 'user_roles')]
 class UserRolesFixture extends AbstractFixture {
 
-public function setUp(): void {
+public function __invoke(): void {
 $id = $this->fixture['id'];
 // ...
 }
@@ -158,7 +158,7 @@ Run options are provided to the `FixtureRunner` as an array or a `RunOptions` ob
 **Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
 
 ```php
-public function setUp(): void {
+public function __invoke(): void {
 $env = $this->options->get('env');
 $url = $this->options->require('base_url');
 $all = $this->options->all();
@@ -180,7 +180,7 @@ use AKlump\FixtureFramework\Exception\FixtureException;
 #[Fixture(id: 'custom_output')]
 class CustomOutputFixture extends AbstractFixture {
 
-  public function setUp(): void {
+  public function __invoke(): void {
     // ...
   }
 
@@ -234,42 +234,7 @@ To run your fixtures, create a script such as `bin/setup-fixtures` that bootstra
 ```php
 #!/usr/bin/env php
 <?php
-$vendor_dir = __DIR__ . '/../vendor';
-require_once $vendor_dir . '/autoload.php';
-
-$flush = in_array('--flush', $argv);
-$silent = in_array('--silent', $argv);
-$filter = '';
-foreach ($argv as $arg) {
-if (str_starts_with($arg, '--filter=')) {
-  $filter = substr($arg, 9);
-  break;
-}
-}
-
-try {
-$fixtures = (new \AKlump\FixtureFramework\Helper\GetFixtures())($vendor_dir, [
-    'MyApp\Tests\Fixture',
-], $flush, $silent, $filter);
-}
-catch (Exception $e) {
-echo "Error ordering fixtures: " . $e->getMessage() . "\n";
-exit(1);
-}
-
-try {
-$options = [
-    'env' => 'test',
-    'url' => 'https://website.com/',
-    'drush' => 'lando nxdb_drush',
-];
-$runner = new \AKlump\FixtureFramework\FixtureRunner($fixtures, $options);
-$runner->run($silent);
-}
-catch (\Exception $e) {
-print $e->getMessage() . "\n";
-exit(1);
-}
+{{ setup-fixtures|raw }}
 ```
 
 ## Cache Management
