@@ -216,4 +216,37 @@ class FixtureRunnerTest extends TestCase {
     $runner2->run(TRUE);
     $this->addToAssertionCount(1);
   }
+
+  public function testConstructThrowsOnInvalidFixtureType() {
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('All fixtures must implement AKlump\FixtureFramework\FixtureInterface; stdClass does not.');
+    new FixtureRunner([new \stdClass()]);
+  }
+
+  public function testConstructThrowsOnInvalidFixtureTypeNonObject() {
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('All fixtures must implement AKlump\FixtureFramework\FixtureInterface; string does not.');
+    new FixtureRunner(['not_an_object']);
+  }
+
+  public function testOnFailureIsSilentWhenRequested() {
+    $index = [
+      [
+        'id' => 'mock_fail',
+        'class' => MockFixture::class,
+      ],
+    ];
+    MockFixture::$shouldFail = true;
+    $fixtures = $this->buildFixtures($index);
+    $runner = new FixtureRunner($fixtures);
+
+    // We expect the exception, but no output because silent is TRUE
+    $this->expectOutputString("");
+    try {
+      $runner->run(TRUE);
+    }
+    catch (FixtureException $e) {
+    }
+    MockFixture::$shouldFail = false;
+  }
 }

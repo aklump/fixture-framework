@@ -30,7 +30,7 @@ class FixtureInstantiator {
     $class = $definition['class'];
 
     if (empty($definition['id'])) {
-      $definition['id'] = (new GetFixtureIdByClassname())($class);
+      $definition['id'] = (new GetFixtureIdByClass())($class);
     }
     if (empty($definition['id'])) {
       throw new \InvalidArgumentException(sprintf('Fixture id must be a non-empty string on class "%s".', $class));

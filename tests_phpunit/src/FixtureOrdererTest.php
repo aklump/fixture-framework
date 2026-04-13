@@ -128,4 +128,64 @@ class FixtureOrdererTest extends TestCase {
     $ids = array_column($ordered, 'id');
     $this->assertEquals(['c', 'a', 'b'], $ids);
   }
+
+  public function testDependencySortingWithMissingFixturesInEdges() {
+    $orderer = new FixtureOrderer();
+    $fixtures = [
+      'a' => ['id' => 'a', 'weight' => 0, 'after' => ['b', 'c'], 'before' => []],
+      'b' => ['id' => 'b', 'weight' => 0, 'after' => [], 'before' => []],
+      'c' => ['id' => 'c', 'weight' => 0, 'after' => [], 'before' => []],
+    ];
+
+    // Manually test the topologicalSort logic by calling order() which uses it.
+    // order() ensures all fixtures in 'after'/'before' exist in $fixtures before calling topologicalSort.
+    // However, if we look at topologicalSort, it has this check:
+    // if (!isset($fixtures[$a]) || !isset($fixtures[$b])) {
+    //   return $a <=> $b;
+    // }
+    // This part of the code is currently unreachable through order().
+    
+    $ordered = $orderer->order($fixtures);
+    $this->assertEquals(['b', 'c', 'a'], array_column($ordered, 'id'));
+  }
+
+  public function testTopologicalSortDirectly() {
+    $orderer = new FixtureOrderer();
+    $reflection = new \ReflectionClass($orderer);
+    $method = $reflection->getMethod('topologicalSort');
+    $method->setAccessible(true);
+
+    $nodes = ['a', 'b'];
+    $edges = ['a' => ['c', 'b']]; // 'a' depends on 'c' and 'b'. 'c' is NOT in $fixtures.
+    $fixtures = [
+      'a' => ['id' => 'a', 'weight' => 0],
+      'b' => ['id' => 'b', 'weight' => 0],
+    ];
+
+    $sorted = $method->invoke($orderer, $nodes, $edges, $fixtures);
+    
+    // 'a' depends on ['c', 'b'].
+    // visit('b') happens then visit('a').
+    // visit('a') calls visit('c') then visit('b').
+    // Since 'c' is not in $nodes, it won't be in the final $sorted unless visit('c') adds it.
+    // However, topologicalSort iterates over $nodes.
+    // Let's see what happens.
+    // $nodes = ['a', 'b']. usort nodes. $nodes stays ['a', 'b'] (lexicographical).
+    // foreach node in ['a', 'b']:
+    // visit('a'):
+    //   $dependencies = ['c', 'b'].
+    //   usort(['c', 'b']):
+    //     $a='c', $b='b'. !isset($fixtures['c']) is TRUE. return 'c' <=> 'b' (1). 
+    //     So ['b', 'c'].
+    //   foreach ['b', 'c']:
+    //     visit('b'):
+    //        ... $sorted[] = 'b';
+    //     visit('c'):
+    //        ... $sorted[] = 'c';
+    //   $sorted[] = 'a';
+    // visit('b'): return (already visited).
+    // Final $sorted = ['b', 'c', 'a'].
+
+    $this->assertEquals(['b', 'c', 'a'], $sorted);
+  }
 }

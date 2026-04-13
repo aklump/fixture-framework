@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @covers \AKlump\FixtureFramework\Traits\FixtureMetadataTrait
  * @covers \AKlump\FixtureFramework\Traits\FixtureOptionsTrait
  * @covers \AKlump\FixtureFramework\Traits\FixtureRunContextTrait
- * @covers \AKlump\FixtureFramework\Helper\GetFixtureIdByClassname
+ * @covers \AKlump\FixtureFramework\Helper\GetFixtureIdByClass
  * @covers \AKlump\FixtureFramework\Helper\FixtureInstantiator
  * @covers \AKlump\FixtureFramework\Runtime\RunContext
  * @covers \AKlump\FixtureFramework\Runtime\RunOptions

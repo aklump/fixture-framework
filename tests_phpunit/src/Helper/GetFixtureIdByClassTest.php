@@ -2,37 +2,36 @@
 
 namespace AKlump\FixtureFramework\Tests\Helper;
 
-use AKlump\FixtureFramework\Fixture;
 use AKlump\FixtureFramework\FixtureInterface;
-use AKlump\FixtureFramework\Helper\GetFixtureIdByClassname;
+use AKlump\FixtureFramework\Helper\GetFixtureIdByClass;
 use AKlump\FixtureFramework\Tests\Fixtures\FixtureA;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\Helper\GetFixtureIdByClassname
+ * @covers \AKlump\FixtureFramework\Helper\GetFixtureIdByClass
  * @uses \AKlump\FixtureFramework\Fixture
  */
-class GetFixtureIdByClassnameTest extends TestCase {
+class GetFixtureIdByClassTest extends TestCase {
 
   public function testInvokeReturnsIdForValidFixture() {
-    $helper = new GetFixtureIdByClassname();
+    $helper = new GetFixtureIdByClass();
     $id = $helper(FixtureA::class);
     $this->assertEquals('fixture_a', $id);
   }
 
   public function testInvokeReturnsEmptyForNonInstantiableClass() {
-    $helper = new GetFixtureIdByClassname();
+    $helper = new GetFixtureIdByClass();
     $this->assertEquals('', $helper(FixtureInterface::class));
     $this->assertEquals('', $helper(AbstractFixtureForTest::class));
   }
 
   public function testInvokeReturnsEmptyForClassNotImplementingFixtureInterface() {
-    $helper = new GetFixtureIdByClassname();
+    $helper = new GetFixtureIdByClass();
     $this->assertEquals('', $helper(NotAFixture::class));
   }
 
   public function testInvokeReturnsEmptyForClassMissingFixtureAttribute() {
-    $helper = new GetFixtureIdByClassname();
+    $helper = new GetFixtureIdByClass();
     $this->assertEquals('', $helper(FixtureWithoutAttribute::class));
   }
 }
