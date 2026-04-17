@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing to list
 
+## [0.0.9] - 2026-04-17
+
+### Changed
+
+- bin/setup-fixtures to bin/setup-fixtures.php
+
 ## [0.0.8] - 2026-04-12
 
 ### Added
