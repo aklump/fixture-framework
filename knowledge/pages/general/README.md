@@ -45,9 +45,9 @@ This example uses a test-oriented directory such as `e2e/`, but fixtures can be 
 3. Create your first fixture `class MyApp\Tests\Fixture\SomeFixture extends \AKlump\FixtureFramework\AbstractFixture`
 4. Be sure to use `#[Fixture(id: 'some_fixture')]`
 5. `mkdir bin/`
-6. Create the runner `bin/setup-fixtures`, changing `'MyApp\\Tests\\Fixture'` to the appropriate namespace.
+6. Create the runner `bin/setup-fixtures.php`, changing `'MyApp\\Tests\\Fixture'` to the appropriate namespace.
 7. Run it for your workflow, for example to prepare local state, sanitize imported content, or set up test prerequisites.
-8. Flush the cache after creating new classes, e.g. `bin/setup-fixtures --flush`
+8. Flush the cache after creating new classes, e.g. `bin/setup-fixtures.php --flush`
 
 ## Core Components
 
@@ -216,9 +216,9 @@ Fixtures are useful anywhere your application needs repeatable state preparation
 
 `FixtureOrderer` performs a topological sort based on `after`/`before` rules, tie-breaking with `weight` and lexicographical `id`.
 
-### Runner `setup-fixtures`
+### Runner `setup-fixtures.php`
 
-To run your fixtures, create a script such as `bin/setup-fixtures` that bootstraps your application and executes the discovered fixtures for the desired workflow.
+To run your fixtures, create a script such as `bin/setup-fixtures.php` that bootstraps your application and executes the discovered fixtures for the desired workflow.
 
 ```php
 #!/usr/bin/env php
