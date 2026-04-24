@@ -2,6 +2,7 @@
 
 namespace AKlump\FixtureFramework\Tests\Runtime;
 
+use AKlump\FixtureFramework\FixtureInterface;
 use AKlump\FixtureFramework\Exception\FixtureException;
 use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
 use AKlump\FixtureFramework\Runtime\FixtureRunner;
@@ -248,5 +249,84 @@ class FixtureRunnerTest extends TestCase {
     catch (FixtureException $e) {
     }
     MockFixture::$shouldFail = false;
+  }
+  
+  public function testRunInWorkingDirectory() {
+    $dir = sys_get_temp_dir() . '/fixture_test_' . uniqid();
+    mkdir($dir);
+    $real_dir = realpath($dir);
+
+    $fixture = $this->createMock(FixtureInterface::class);
+    $fixture->method('id')->willReturn('test_fixture');
+
+    $captured_dir = null;
+    $fixture->expects($this->once())
+      ->method('__invoke')
+      ->willReturnCallback(function () use (&$captured_dir) {
+        $captured_dir = getcwd();
+      });
+
+    $runner = new FixtureRunner([$fixture]);
+    $runner->run(TRUE, $dir);
+
+    $this->assertEquals($real_dir, realpath($captured_dir));
+    rmdir($dir);
+  }
+
+  public function testRunMultipleFixturesInWorkingDirectory() {
+    $dir = sys_get_temp_dir() . '/fixture_test_' . uniqid();
+    mkdir($dir);
+    $real_dir = realpath($dir);
+
+    $fixture1 = $this->createMock(FixtureInterface::class);
+    $fixture1->method('id')->willReturn('fixture1');
+    $captured_dir1 = null;
+    $fixture1->expects($this->once())
+      ->method('__invoke')
+      ->willReturnCallback(function () use (&$captured_dir1) {
+        $captured_dir1 = getcwd();
+      });
+
+    $fixture2 = $this->createMock(FixtureInterface::class);
+    $fixture2->method('id')->willReturn('fixture2');
+    $captured_dir2 = null;
+    $fixture2->expects($this->once())
+      ->method('__invoke')
+      ->willReturnCallback(function () use (&$captured_dir2) {
+        $captured_dir2 = getcwd();
+      });
+
+    $runner = new FixtureRunner([$fixture1, $fixture2]);
+    $runner->run(TRUE, $dir);
+
+    $this->assertEquals($real_dir, realpath($captured_dir1));
+    $this->assertEquals($real_dir, realpath($captured_dir2));
+
+    rmdir($dir);
+  }
+
+  public function testWorkingDirectoryIsRestored() {
+    $original_dir = getcwd();
+    $dir = sys_get_temp_dir() . '/fixture_test_' . uniqid();
+    mkdir($dir);
+
+    $fixture = $this->createMock(FixtureInterface::class);
+    $fixture->method('id')->willReturn('test_fixture');
+
+    $runner = new FixtureRunner([$fixture]);
+    $runner->run(TRUE, $dir);
+
+    $this->assertEquals($original_dir, getcwd());
+    rmdir($dir);
+  }
+
+  public function testRunThrowsExceptionWhenWorkingDirectoryDoesNotExist() {
+    $dir = '/path/to/non_existent_directory_' . uniqid();
+    $fixture = $this->createMock(FixtureInterface::class);
+    $runner = new FixtureRunner([$fixture]);
+
+    $this->expectException(FixtureException::class);
+    $this->expectExceptionMessage("Unable to change working directory to '$dir'.");
+    $runner->run(TRUE, $dir);
   }
 }

@@ -11,7 +11,7 @@ A lightweight PHP framework for fixture management that prepares application sta
 
 A fixture is a discoverable, ordered unit of setup logic. Use fixtures whenever you need to create, sanitize, enable, normalize, or otherwise prepare your application into a known state.
 
-Each fixture class (`implements \AKlump\FixtureFramework\FixtureInterface`) should be responsible for a single atomic concern, such as creating a user, sanitizing imported data, or enabling development modules.
+Each fixture class (usually `extends \AKlump\FixtureFramework\AbstractFixture`) should be responsible for a single atomic concern, such as creating a user, sanitizing imported data, or enabling development modules.
 
 ## Key Features
 
@@ -33,7 +33,7 @@ This example uses a test-oriented directory such as `e2e/`, but fixtures can be 
 ```json
 {
   "autoload-dev": {
-    "psr-4": {n
+    "psr-4": {
       "MyApp\\Tests\\": [
         "e2e/src/"
       ]
@@ -124,11 +124,10 @@ use AKlump\FixtureFramework\Fixture;
 #[Fixture(id: 'user_roles')]
 class UserRolesFixture extends AbstractFixture {
 
-public function __invoke(): void {
-$id = $this->fixture['id'];
-// ...
-}
-
+  public function __invoke(): void {
+    $id = $this->fixture['id'];
+    // ...
+  }
 }
 ```
 
