@@ -57,13 +57,7 @@ Every fixture must implement this interface:
 
 {{ file.FixtureInterface_php|fenced }}
 
-### 2. `AbstractFixture` Class
-
-The `AbstractFixture` class provides a base implementation of `FixtureInterface` and includes the `FixtureMetadataTrait`, `FixtureRunContextTrait`, and `FixtureOptionsTrait`. Extending this class simplifies fixture development and allows for custom success/failure handling.
-
-{{ snippet.ExampleFixture_php|fenced }}
-
-### 3. `#[Fixture]` Attribute
+### 2. `#[Fixture]` Attribute
 
 Used to identify classes as fixtures and to define fixture metadata.
 
@@ -76,7 +70,27 @@ Used to identify classes as fixtures and to define fixture metadata.
 
 {{ snippet.fixture_attributes|fenced }}
 
-### 4. Accessing Metadata via `FixtureMetadataTrait`
+### 3. `AbstractFixture` Class
+
+The `AbstractFixture` class provides a base implementation of `FixtureInterface` and includes the `FixtureMetadataTrait`, `FixtureRunContextTrait`, and `FixtureOptionsTrait`. Extending this class simplifies fixture development and allows for custom success/failure handling.
+
+{{ snippet.ExampleFixture_php|fenced }}
+
+#### Customizing Success and Failure
+
+You can override `onSuccess` and `onFailure` to provide custom feedback.
+
+{{ snippet.CustomOutputFixture_php|fenced }}
+
+### 4. Injected Properties
+
+When using `AbstractFixture`, or the respective traits, the following properties are automatically injected into the fixture instance by the `FixtureRunner`:
+
+- `$this->fixture`: (array) Contains the fixture's metadata (id, weight, tags, etc.).
+- `$this->runContext`: (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
+- `$this->options`: (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
+
+#### Accessing Metadata via `FixtureMetadataTrait`
 
 If you want your fixture to have access to its own metadata (for example, to get the `id` or `tags` defined in the attribute), you can use the `FixtureMetadataTrait`.
 
@@ -85,22 +99,6 @@ If you want your fixture to have access to its own metadata (for example, to get
 This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `__invoke()`.
 
 {{ snippet.get_fixture_id|fenced }}
-
-#### Injected Properties
-
-When using `AbstractFixture`, or the respective traits, the following properties are automatically injected into the fixture instance by the `FixtureRunner`:
-
-- `$this->fixture`: (array) Contains the fixture's metadata (id, weight, tags, etc.).
-- `$this->runContext`: (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
-- `$this->options`: (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
-
-#### Global Run Options
-
-Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options` which will always be an instance of `\AKlump\FixtureFramework\RunOptions`.
-
-**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
-
-{{ snippet.using_options|fenced }}
 
 #### Run Context
 
@@ -112,11 +110,13 @@ The `RunContext` is a shared, mutable data store that persists throughout a sing
 
 {{ snippet.run_context_php|fenced }}
 
-#### Customizing Success and Failure
+#### Global Run Options
 
-You can override `onSuccess` and `onFailure` to provide custom feedback.
+Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options` which will always be an instance of `\AKlump\FixtureFramework\RunOptions`.
 
-{{ snippet.CustomOutputFixture_php|fenced }}
+**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
+
+{{ snippet.using_options|fenced }}
 
 ## Design Principles
 
