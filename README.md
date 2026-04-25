@@ -67,6 +67,7 @@ This example uses a test-oriented directory such as `e2e/`, but fixtures can be 
 Every fixture must implement this interface:
 
 **File:** `FixtureInterface.php`
+
 ```php
 <?php
 
@@ -107,6 +108,7 @@ class ExampleFixture extends AbstractFixture {
 The `AbstractFixture` class provides a base implementation of `FixtureInterface` and includes the `FixtureMetadataTrait`, `FixtureRunContextTrait`, and `FixtureOptionsTrait`. Extending this class simplifies fixture development and allows for custom success/failure handling.
 
 **File:** `ExampleFixture.php`
+
 ```php
 <?php
 
@@ -127,6 +129,7 @@ class ExampleFixture extends AbstractFixture {
 You can override `onSuccess` and `onFailure` to provide custom feedback.
 
 **File:** `CustomOutputFixture.php`
+
 ```php
 <?php
 
@@ -170,6 +173,7 @@ When using `AbstractFixture`, or the respective traits, the following properties
 If you want your fixture to have access to its own metadata (for example, to get the `id` or `tags` defined in the attribute), you can use the `FixtureMetadataTrait`.
 
 **File:** `FixtureMetadataTrait.php`
+
 ```php
 <?php
 
@@ -209,6 +213,7 @@ The `RunContext` is a shared, mutable data store that persists throughout a sing
 - **Data Retrieval**: Use `get()` to retrieve values, `has()` to check for existence, or `require()` to throw an exception if a critical piece of shared data is missing.
 
 **File:** `run_context.php`
+
 ```php
 <?php
 
@@ -241,13 +246,41 @@ class FixtureB extends \AKlump\FixtureFramework\AbstractFixture {
 
 Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options` which will always be an instance of `\AKlump\FixtureFramework\RunOptions`.
 
-**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
+**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed unless you extend `\AKlump\FixtureFramework\Runtime\RunOptionsValidator` as show below.
 
 ```php
   public function __invoke(): void {
     $env = $this->options->get('env');
     $url = $this->options->require('base_url');
     $all = $this->options->all();
+```
+
+##### Allowing Custom Run Options
+
+**File:** `RunOptionsValidator.php`
+
+```php
+<?php
+
+namespace AKlump\Directio\FixtureFramework\Runtime;
+
+use AKlump\FixtureFramework\Exception\InvalidRunOptionsException;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class RunOptionsValidator extends \AKlump\FixtureFramework\Runtime\RunOptionsValidator {
+
+  public function validate(array $options, string $path = ''): void {
+    if (isset($options['output'])) {
+      if ($options['output'] instanceof OutputInterface) {
+        return;
+      }
+      throw new InvalidRunOptionsException("Invalid output option, it must be an instance of " . OutputInterface::class);
+    }
+
+    parent::validate($options, $path);
+  }
+
+}
 ```
 
 ## Design Principles
@@ -282,6 +315,7 @@ Fixtures are useful anywhere your application needs repeatable state preparation
 To run your fixtures, create a script such as `bin/setup-fixtures.php` that bootstraps your application and executes the discovered fixtures for the desired workflow.
 
 **File:** `setup-fixtures.php`
+
 ```php
 #!/usr/bin/env php
 <?php
