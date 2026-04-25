@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+
 $vendor_dir = __DIR__ . '/../vendor';
 require_once $vendor_dir . '/autoload.php';
 
@@ -29,8 +30,9 @@ try {
       'url' => 'https://website.com/',
       'drush' => 'lando nxdb_drush',
   ];
-  $validator = new \AKlump\FixtureFramework\Runtime\RunContextValidator();
-  $fixtures = (new \AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder($options, $validator))($definitions);
+  $run_context_validator = new \AKlump\FixtureFramework\Runtime\RunContextValidator();
+  $instantiator = new \AKlump\FixtureFramework\Runtime\FixtureInstantiator($options, $run_context_validator);
+  $fixtures = (new \AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder($instantiator))($definitions);
   $runner = new \AKlump\FixtureFramework\Runtime\FixtureRunner($fixtures);
   $runner->run($silent);
 }

@@ -2,8 +2,8 @@
 
 namespace AKlump\FixtureFramework\Tests\Runtime;
 
-use AKlump\FixtureFramework\FixtureInterface;
 use AKlump\FixtureFramework\Exception\FixtureException;
+use AKlump\FixtureFramework\FixtureInterface;
 use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
 use AKlump\FixtureFramework\Runtime\FixtureRunner;
 use AKlump\FixtureFramework\Runtime\RunContextValidator;
@@ -28,12 +28,13 @@ use PHPUnit\Framework\TestCase;
  * @uses \AKlump\FixtureFramework\Runtime\RunOptions
  * @uses \AKlump\FixtureFramework\Runtime\RunOptionsValidator
  * @uses \AKlump\FixtureFramework\Exception\InvalidRunOptionsException
- * @uses \AKlump\FixtureFramework\Helper\FixtureInstantiator
+ * @uses \AKlump\FixtureFramework\Runtime\FixtureInstantiator
  */
 class FixtureRunnerTest extends TestCase {
 
   private function buildFixtures(array $fixture_index, array $options = []): array {
-    $builder = new FixtureCollectionBuilder($options, new RunContextValidator());
+    $instantiator = new \AKlump\FixtureFramework\Runtime\FixtureInstantiator($options, new RunContextValidator());
+    $builder = new FixtureCollectionBuilder($instantiator);
 
     return $builder($fixture_index);
   }
@@ -250,7 +251,7 @@ class FixtureRunnerTest extends TestCase {
     }
     MockFixture::$shouldFail = false;
   }
-  
+
   public function testRunInWorkingDirectory() {
     $dir = sys_get_temp_dir() . '/fixture_test_' . uniqid();
     mkdir($dir);

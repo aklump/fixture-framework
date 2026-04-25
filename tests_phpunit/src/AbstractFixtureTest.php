@@ -3,9 +3,8 @@
 namespace AKlump\FixtureFramework\Tests;
 
 use AKlump\FixtureFramework\AbstractFixture;
-use AKlump\FixtureFramework\Fixture;
 use AKlump\FixtureFramework\Exception\FixtureException;
-use AKlump\FixtureFramework\Helper\FixtureInstantiator;
+use AKlump\FixtureFramework\Runtime\FixtureInstantiator;
 use AKlump\FixtureFramework\Runtime\RunContextStore;
 use AKlump\FixtureFramework\Runtime\RunContextValidator;
 use AKlump\FixtureFramework\Runtime\RunOptions;
@@ -18,7 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @covers \AKlump\FixtureFramework\Traits\FixtureOptionsTrait
  * @covers \AKlump\FixtureFramework\Traits\FixtureRunContextTrait
  * @covers \AKlump\FixtureFramework\Helper\GetFixtureIdByClass
- * @covers \AKlump\FixtureFramework\Helper\FixtureInstantiator
+ * @covers \AKlump\FixtureFramework\Runtime\FixtureInstantiator
  * @covers \AKlump\FixtureFramework\Runtime\RunContext
  * @covers \AKlump\FixtureFramework\Runtime\RunOptions
  * @covers \AKlump\FixtureFramework\Runtime\RunOptionsValidator
@@ -100,36 +99,30 @@ class AbstractFixtureTest extends TestCase {
   }
 
   public function testIdReturnsValueFromMetadata() {
-    $instantiator = new FixtureInstantiator();
+    $instantiator = new FixtureInstantiator(new RunOptions([]), $this->createMock(RunContextValidator::class));
     $fixture = $instantiator(
       ['class' => Fixtures\FixtureA::class, 'id' => 'custom_id'],
-      new RunOptions([]),
-      $this->createMock(RunContextStore::class),
-      $this->createMock(RunContextValidator::class)
+      $this->createMock(RunContextStore::class)
     );
     $this->assertEquals('custom_id', $fixture->id());
   }
 
   public function testIdReturnsValueFromAttributeWhenMetadataMissing() {
-    $instantiator = new FixtureInstantiator();
+    $instantiator = new FixtureInstantiator(new RunOptions([]), $this->createMock(RunContextValidator::class));
     $fixture = $instantiator(
       ['class' => Fixtures\FixtureA::class],
-      new RunOptions([]),
-      $this->createMock(RunContextStore::class),
-      $this->createMock(RunContextValidator::class)
+      $this->createMock(RunContextStore::class)
     );
     $this->assertEquals('fixture_a', $fixture->id());
   }
 
   public function testInstantiationThrowsWhenIdCannotBeResolved() {
-    $instantiator = new FixtureInstantiator();
+    $instantiator = new FixtureInstantiator(new RunOptions([]), $this->createMock(RunContextValidator::class));
     $this->expectException(\InvalidArgumentException::class);
     $this->expectExceptionMessage('Fixture id must be a non-empty string');
     $instantiator(
       ['class' => \AKlump\FixtureFramework\Tests\Fixtures\MockFixture::class],
-      new RunOptions([]),
-      $this->createMock(RunContextStore::class),
-      $this->createMock(RunContextValidator::class)
+      $this->createMock(RunContextStore::class)
     );
   }
 }

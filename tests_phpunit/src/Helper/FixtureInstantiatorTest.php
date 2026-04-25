@@ -2,16 +2,16 @@
 
 namespace AKlump\FixtureFramework\Tests\Helper;
 
-use AKlump\FixtureFramework\Helper\FixtureInstantiator;
-use AKlump\FixtureFramework\Runtime\RunOptions;
+use AKlump\FixtureFramework\FixtureInterface;
+use AKlump\FixtureFramework\Runtime\FixtureInstantiator;
 use AKlump\FixtureFramework\Runtime\RunContextStore;
 use AKlump\FixtureFramework\Runtime\RunContextValidator;
+use AKlump\FixtureFramework\Runtime\RunOptions;
 use AKlump\FixtureFramework\Tests\Fixtures\FixtureA;
-use AKlump\FixtureFramework\FixtureInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \AKlump\FixtureFramework\Helper\FixtureInstantiator
+ * @covers \AKlump\FixtureFramework\Runtime\FixtureInstantiator
  * @uses \AKlump\FixtureFramework\Helper\GetFixtureIdByClass
  * @uses \AKlump\FixtureFramework\Runtime\RunOptions
  * @uses \AKlump\FixtureFramework\Runtime\RunOptionsValidator
@@ -31,15 +31,15 @@ class FixtureInstantiatorTest extends TestCase {
   private RunContextValidator $validator;
 
   protected function setUp(): void {
-    $this->instantiator = new FixtureInstantiator();
     $this->store = new RunContextStore();
     $this->validator = new RunContextValidator();
+    $this->instantiator = new FixtureInstantiator([], $this->validator);
   }
 
   public function testThrowsIfClassIsMissing() {
     $this->expectException(\InvalidArgumentException::class);
     $this->expectExceptionMessage('Fixture record must have a class.');
-    ($this->instantiator)([], [], $this->store, $this->validator);
+    ($this->instantiator)([], $this->store);
   }
 
   public function testThrowsIfIdCannotBeResolved() {
@@ -51,13 +51,14 @@ class FixtureInstantiatorTest extends TestCase {
     };
     $this->expectException(\InvalidArgumentException::class);
     $this->expectExceptionMessage('Fixture id must be a non-empty string on class "' . get_class($class) . '".');
-    ($this->instantiator)(['class' => get_class($class)], [], $this->store, $this->validator);
+    ($this->instantiator)(['class' => get_class($class)], $this->store);
   }
 
   public function testInstantiationWithGlobalOptionsAsArray() {
     $definition = ['class' => FixtureA::class];
     $options = ['env' => 'test_array'];
-    $fixture = ($this->instantiator)($definition, $options, $this->store, $this->validator);
+    $instantiator = new FixtureInstantiator($options, $this->validator);
+    $fixture = $instantiator($definition, $this->store);
 
     $this->assertInstanceOf(FixtureA::class, $fixture);
     $this->assertEquals('test_array', $fixture->options->get('env'));
@@ -66,7 +67,8 @@ class FixtureInstantiatorTest extends TestCase {
   public function testInstantiationWithGlobalOptionsAsRunOptions() {
     $definition = ['class' => FixtureA::class];
     $options = new RunOptions(['env' => 'test_object']);
-    $fixture = ($this->instantiator)($definition, $options, $this->store, $this->validator);
+    $instantiator = new FixtureInstantiator($options, $this->validator);
+    $fixture = $instantiator($definition, $this->store);
 
     $this->assertInstanceOf(FixtureA::class, $fixture);
     $this->assertEquals('test_object', $fixture->options->get('env'));
@@ -74,7 +76,7 @@ class FixtureInstantiatorTest extends TestCase {
 
   public function testFixturePropertyPopulation() {
     $definition = ['class' => FixtureA::class, 'id' => 'custom_a', 'foo' => 'bar'];
-    $fixture = ($this->instantiator)($definition, [], $this->store, $this->validator);
+    $fixture = ($this->instantiator)($definition, $this->store);
 
     $this->assertEquals('custom_a', $fixture->id());
     // AbstractFixture uses FixtureMetadataTrait which has a public $fixture property
@@ -83,7 +85,7 @@ class FixtureInstantiatorTest extends TestCase {
 
   public function testRunContextPopulation() {
     $definition = ['class' => FixtureA::class];
-    $fixture = ($this->instantiator)($definition, [], $this->store, $this->validator);
+    $fixture = ($this->instantiator)($definition, $this->store);
 
     $this->assertNotNull($fixture->runContext);
   }
