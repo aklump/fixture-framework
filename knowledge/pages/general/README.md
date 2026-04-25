@@ -114,9 +114,13 @@ The `RunContext` is a shared, mutable data store that persists throughout a sing
 
 Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options` which will always be an instance of `\AKlump\FixtureFramework\RunOptions`.
 
-**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
+**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed unless you extend `\AKlump\FixtureFramework\Runtime\RunOptionsValidator` as show below.
 
 {{ snippet.using_options|fenced }}
+
+##### Allowing Custom Run Options
+
+{{ snippet.RunOptionsValidator_php|fenced }}
 
 ## Design Principles
 
