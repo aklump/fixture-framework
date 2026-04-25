@@ -86,26 +86,7 @@ interface FixtureInterface {
 }
 ```
 
-### 2. `AbstractFixture` Class
-
-The `AbstractFixture` class provides a base implementation of `FixtureInterface` and includes the `FixtureMetadataTrait`, `FixtureRunContextTrait`, and `FixtureOptionsTrait`. Extending this class simplifies fixture development and allows for custom success/failure handling.
-
-```
-<?php
-
-use AKlump\FixtureFramework\AbstractFixture;
-use AKlump\FixtureFramework\Fixture;
-
-#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
-class ExampleFixture extends AbstractFixture {
-
-  public function __invoke(): void {
-    $fixture_id = $this->fixture['id'];
-  }
-}
-```
-
-### 3. `#[Fixture]` Attribute
+### 2. `#[Fixture]` Attribute
 
 Used to identify classes as fixtures and to define fixture metadata.
 
@@ -121,7 +102,70 @@ Used to identify classes as fixtures and to define fixture metadata.
 class ExampleFixture extends AbstractFixture {
 ```
 
-### 4. Accessing Metadata via `FixtureMetadataTrait`
+### 3. `AbstractFixture` Class
+
+The `AbstractFixture` class provides a base implementation of `FixtureInterface` and includes the `FixtureMetadataTrait`, `FixtureRunContextTrait`, and `FixtureOptionsTrait`. Extending this class simplifies fixture development and allows for custom success/failure handling.
+
+**File:** `ExampleFixture.php`
+```php
+<?php
+
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
+
+#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
+class ExampleFixture extends AbstractFixture {
+
+  public function __invoke(): void {
+    $fixture_id = $this->fixture['id'];
+  }
+}
+```
+
+#### Customizing Success and Failure
+
+You can override `onSuccess` and `onFailure` to provide custom feedback.
+
+**File:** `CustomOutputFixture.php`
+```php
+<?php
+
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
+use AKlump\FixtureFramework\Exception\FixtureException;
+
+#[Fixture(id: 'custom_output')]
+class CustomOutputFixture extends AbstractFixture {
+
+  public function __invoke(): void {
+    // ...
+  }
+
+  public function onSuccess(bool $silent = FALSE) {
+    if (!$silent) {
+      echo "✅ Successfully completed!" . PHP_EOL;
+    }
+  }
+
+  public function onFailure(FixtureException $e, bool $silent = FALSE) {
+    if (!$silent) {
+      echo "❌ Failed: " . $e->getMessage() . PHP_EOL;
+    }
+    throw $e;
+  }
+
+}
+```
+
+### 4. Injected Properties
+
+When using `AbstractFixture`, or the respective traits, the following properties are automatically injected into the fixture instance by the `FixtureRunner`:
+
+- `$this->fixture`: (array) Contains the fixture's metadata (id, weight, tags, etc.).
+- `$this->runContext`: (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
+- `$this->options`: (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
+
+#### Accessing Metadata via `FixtureMetadataTrait`
 
 If you want your fixture to have access to its own metadata (for example, to get the `id` or `tags` defined in the attribute), you can use the `FixtureMetadataTrait`.
 
@@ -156,27 +200,6 @@ This trait adds a public `array $fixture` property to your class. The `FixtureRu
     $fixture_id = $this->fixture['id'];
 ```
 
-#### Injected Properties
-
-When using `AbstractFixture`, or the respective traits, the following properties are automatically injected into the fixture instance by the `FixtureRunner`:
-
-- `$this->fixture`: (array) Contains the fixture's metadata (id, weight, tags, etc.).
-- `$this->runContext`: (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
-- `$this->options`: (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
-
-#### Global Run Options
-
-Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options` which will always be an instance of `\AKlump\FixtureFramework\RunOptions`.
-
-**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
-
-```php
-  public function __invoke(): void {
-    $env = $this->options->get('env');
-    $url = $this->options->require('base_url');
-    $all = $this->options->all();
-```
-
 #### Run Context
 
 The `RunContext` is a shared, mutable data store that persists throughout a single execution run. It is the primary mechanism for fixtures to communicate or pass data to downstream fixtures (e.g., passing a created user's ID to a subsequent profile-creation fixture).
@@ -185,7 +208,8 @@ The `RunContext` is a shared, mutable data store that persists throughout a sing
 - **Strict Namespacing**: For data integrity, a fixture may only `set()` keys that are prefixed with its own fixture ID (e.g., `my_fixture.entity_id`). This prevents fixtures from accidentally overwriting each other's data.
 - **Data Retrieval**: Use `get()` to retrieve values, `has()` to check for existence, or `require()` to throw an exception if a critical piece of shared data is missing.
 
-```
+**File:** `run_context.php`
+```php
 <?php
 
 #[\AKlump\FixtureFramework\Fixture(id: 'fixture_a')]
@@ -213,38 +237,17 @@ class FixtureB extends \AKlump\FixtureFramework\AbstractFixture {
 }
 ```
 
-#### Customizing Success and Failure
+#### Global Run Options
 
-You can override `onSuccess` and `onFailure` to provide custom feedback.
+Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options` which will always be an instance of `\AKlump\FixtureFramework\RunOptions`.
 
-```
-<?php
+**Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
 
-use AKlump\FixtureFramework\AbstractFixture;
-use AKlump\FixtureFramework\Fixture;
-use AKlump\FixtureFramework\Exception\FixtureException;
-
-#[Fixture(id: 'custom_output')]
-class CustomOutputFixture extends AbstractFixture {
-
+```php
   public function __invoke(): void {
-    // ...
-  }
-
-  public function onSuccess(bool $silent = FALSE) {
-    if (!$silent) {
-      echo "✅ Successfully completed!" . PHP_EOL;
-    }
-  }
-
-  public function onFailure(FixtureException $e, bool $silent = FALSE) {
-    if (!$silent) {
-      echo "❌ Failed: " . $e->getMessage() . PHP_EOL;
-    }
-    throw $e;
-  }
-
-}
+    $env = $this->options->get('env');
+    $url = $this->options->require('base_url');
+    $all = $this->options->all();
 ```
 
 ## Design Principles
