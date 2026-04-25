@@ -55,21 +55,11 @@ This example uses a test-oriented directory such as `e2e/`, but fixtures can be 
 
 Every fixture must implement this interface:
 
-```php
-namespace AKlump\FixtureFramework;
-
-interface FixtureInterface {
-public function __invoke(): void;
-public function onSuccess(bool $silent = FALSE);
-public function onFailure(FixtureException $e, bool $silent = FALSE);
-}
-```
+{{ file.FixtureInterface_php|fenced }}
 
 ### 2. `#[Fixture]` Attribute
 
-Used to define fixture metadata.
-
-A fixture is not limited to test data. It may prepare any repeatable application state, such as baseline content, sanitized users, enabled development modules, or other context-specific setup.
+Used to identify classes as fixtures and to define fixture metadata.
 
 - `id` (string, required): Unique identifier.
 - `weight` (int, default 0): Lower weights run earlier.
@@ -78,60 +68,21 @@ A fixture is not limited to test data. It may prepare any repeatable application
 - `tags` (array, optional): Metadata for future filtering.
 - `discoverable` (bool, default true): Set to `false` to hide from discovery.
 
-**Example:**
+{{ snippet.fixture_attributes|fenced }}
 
-```php
-use AKlump\FixtureFramework\FixtureInterface;
-use AKlump\FixtureFramework\Fixture;
-
-#[Fixture(id: 'user_roles', weight: -10, after: ['base_schema'])]
-class UserRolesFixture implements FixtureInterface {
-// ...
-}
-```
-
-### 3. Accessing Metadata via `FixtureMetadataTrait`
-
-If you want your fixture to have access to its own metadata (for example, to get the `id` or `tags` defined in the attribute), you can use the `FixtureMetadataTrait`.
-
-This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `__invoke()`.
-
-```php
-use AKlump\FixtureFramework\FixtureInterface;
-use AKlump\FixtureFramework\Fixture;
-use AKlump\FixtureFramework\Traits\FixtureMetadataTrait;
-
-#[Fixture(id: 'user_roles')]
-class UserRolesFixture implements FixtureInterface {
-
-use FixtureMetadataTrait;
-
-public function __invoke(): void {
-$id = $this->fixture['id'];
-// ...
-}
-}
-```
-
-### 4. `AbstractFixture` Class
+### 3. `AbstractFixture` Class
 
 The `AbstractFixture` class provides a base implementation of `FixtureInterface` and includes the `FixtureMetadataTrait`, `FixtureRunContextTrait`, and `FixtureOptionsTrait`. Extending this class simplifies fixture development and allows for custom success/failure handling.
 
-```php
-use AKlump\FixtureFramework\AbstractFixture;
-use AKlump\FixtureFramework\Fixture;
+{{ snippet.ExampleFixture_php|fenced }}
 
-#[Fixture(id: 'user_roles')]
-class UserRolesFixture extends AbstractFixture {
+#### Customizing Success and Failure
 
-  public function __invoke(): void {
-    $id = $this->fixture['id'];
-    // ...
-  }
-}
-```
+You can override `onSuccess` and `onFailure` to provide custom feedback.
 
-#### Injected Properties
+{{ snippet.CustomOutputFixture_php|fenced }}
+
+### 4. Injected Properties
 
 When using `AbstractFixture`, or the respective traits, the following properties are automatically injected into the fixture instance by the `FixtureRunner`:
 
@@ -139,54 +90,33 @@ When using `AbstractFixture`, or the respective traits, the following properties
 - `$this->runContext`: (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
 - `$this->options`: (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
 
+#### Accessing Metadata via `FixtureMetadataTrait`
+
+If you want your fixture to have access to its own metadata (for example, to get the `id` or `tags` defined in the attribute), you can use the `FixtureMetadataTrait`.
+
+{{ file.FixtureMetadataTrait_php|fenced }}
+
+This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `__invoke()`.
+
+{{ snippet.get_fixture_id|fenced }}
+
+#### Run Context
+
+The `RunContext` is a shared, mutable data store that persists throughout a single execution run. It is the primary mechanism for fixtures to communicate or pass data to downstream fixtures (e.g., passing a created user's ID to a subsequent profile-creation fixture).
+
+- **Shared Mutable State**: Every fixture in the collection receives the same `RunContext` instance, allowing state to be built up across the entire run.
+- **Strict Namespacing**: For data integrity, a fixture may only `set()` keys that are prefixed with its own fixture ID (e.g., `my_fixture.entity_id`). This prevents fixtures from accidentally overwriting each other's data.
+- **Data Retrieval**: Use `get()` to retrieve values, `has()` to check for existence, or `require()` to throw an exception if a critical piece of shared data is missing.
+
+{{ snippet.run_context_php|fenced }}
+
 #### Global Run Options
 
-Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options`.
+Run options are provided to the `FixtureRunner` as an array or a `RunOptions` object. Inside a fixture, you can access them via `$this->options` which will always be an instance of `\AKlump\FixtureFramework\RunOptions`.
 
 **Important:** Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed.
 
-```php
-public function __invoke(): void {
-$env = $this->options->get('env');
-$url = $this->options->require('base_url');
-$all = $this->options->all();
-}
-```
-
-- `RunOptions` = read-only run input.
-- `RunContext` = shared mutable runtime output.
-
-#### Customizing Success and Failure
-
-You can override `onSuccess` and `onFailure` to provide custom feedback.
-
-```php
-use AKlump\FixtureFramework\AbstractFixture;
-use AKlump\FixtureFramework\Fixture;
-use AKlump\FixtureFramework\Exception\FixtureException;
-
-#[Fixture(id: 'custom_output')]
-class CustomOutputFixture extends AbstractFixture {
-
-  public function __invoke(): void {
-    // ...
-  }
-
-  public function onSuccess(bool $silent = FALSE) {
-    if (!$silent) {
-      echo "✅ Successfully completed!" . PHP_EOL;
-    }
-  }
-
-  public function onFailure(FixtureException $e, bool $silent = FALSE) {
-    if (!$silent) {
-      echo "❌ Failed: " . $e->getMessage() . PHP_EOL;
-    }
-    throw $e;
-  }
-
-}
-```
+{{ snippet.using_options|fenced }}
 
 ## Design Principles
 
@@ -219,11 +149,7 @@ Fixtures are useful anywhere your application needs repeatable state preparation
 
 To run your fixtures, create a script such as `bin/setup-fixtures.php` that bootstraps your application and executes the discovered fixtures for the desired workflow.
 
-```php
-#!/usr/bin/env php
-<?php
-{{ setup-fixtures|raw }}
-```
+{{ file.setup_fixtures_php|fenced }}
 
 ## Cache Management
 

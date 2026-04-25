@@ -6,3 +6,17 @@ composer: {
 image:
   max_width: 830
   pixel_density: 2
+snippets:
+  -
+    group: file
+    source:
+      - ../install/*.php
+      - ../src/FixtureInterface.php
+      - ../src/Traits/FixtureMetadataTrait.php
+    tag_name: file
+    extract_tags: false
+  -
+    group: snippet
+    source:
+      - ./snippet/*.php
+    tag_name: snippet
