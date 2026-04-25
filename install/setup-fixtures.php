@@ -1,6 +1,5 @@
 #!/usr/bin/env php
 <?php
-// <readme id="setup-fixtures">
 $vendor_dir = __DIR__ . '/../vendor';
 require_once $vendor_dir . '/autoload.php';
 
@@ -39,4 +38,3 @@ catch (\Exception $e) {
   print $e->getMessage() . "\n";
   exit(1);
 }
-// </readme>
