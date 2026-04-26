@@ -4,6 +4,7 @@ namespace AKlump\FixtureFramework\Runtime;
 
 use AKlump\FixtureFramework\FixtureInterface;
 use AKlump\FixtureFramework\Helper\GetFixtureIdByClass;
+use AKlump\FixtureFramework\Interface\InitializableFixtureInterface;
 
 class FixtureInstantiator {
 
@@ -54,6 +55,10 @@ class FixtureInstantiator {
     }
     if (property_exists($fixture, 'runContext')) {
       $fixture->runContext = new RunContext($definition['id'], $store, $this->validator);
+    }
+
+    if ($fixture instanceof InitializableFixtureInterface) {
+      $fixture->initialize();
     }
 
     return $fixture;
