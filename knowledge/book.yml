@@ -1,9 +1,9 @@
-title: Book
+title: Fixture Framework
 uuid: 1735d351-b9aa-4012-8f59-91cd9f8f7504
 chapters:
   -
     id: general
     title: General
     pages:
-      - changelog
       - readme
+      - changelog
