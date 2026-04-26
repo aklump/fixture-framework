@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.11] - 2026-04-26
+
 ### Added
 
 - Added `\AKlump\FixtureFramework\FixtureInterface::description` and optional `description` metadata to the `Fixture` attribute for short, human-readable fixture summaries.

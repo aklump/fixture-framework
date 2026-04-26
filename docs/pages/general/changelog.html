@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.10">
-      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.10">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.10">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.11">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.11">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.11">
         <title>Changelog | Fixture Framework</title>
   </head>
 <body class="my-5">
@@ -46,6 +46,11 @@
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2>[Unreleased]</h2>
+<h2>[0.0.11] - 2026-04-26</h2>
+<h3>Added</h3>
+<ul>
+<li>Added <code>\AKlump\FixtureFramework\FixtureInterface::description</code> and optional <code>description</code> metadata to the <code>Fixture</code> attribute for short, human-readable fixture summaries.</li>
+</ul>
 <h3>Changed</h3>
 <ul>
 <li>Fixture auto-wiring is now interface-driven.</li>
@@ -58,6 +63,8 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <li><code>RunOptions</code> constructor now has optional <code>$options</code> and <code>$validator</code> parameters.</li>
 </ul>
 <h3>Migration Guide</h3>
+<h4><code>FixtureInterface</code></h4>
+<p>If your fixture implements <code>FixtureInterface</code> directly (and does not extend <code>AbstractFixture</code>), you must now implement the <code>description(): string</code> method.</p>
 <h4>Fixture auto-wiring</h4>
 <p>Fixture auto-wiring is now based on explicit capability interfaces instead of public property detection.</p>
 <p>If your fixture extends <code>AbstractFixture</code>, no immediate change is required. The existing public properties still work, and new accessor methods are available:</p>
@@ -123,7 +130,7 @@ $fixtures = $builder($definitions);
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>0.0.10</strong>
+        <strong>0.0.11</strong>
         &bull;
                     Last Update: <strong>4/26/2026</strong>
           </div>
@@ -232,9 +239,9 @@ $fixtures = $builder($definitions);
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.10"></script>
-  <script src="../../dist/lunr.js?ver=0.0.10"></script>
-  <script src="../../dist/knowledge.min.js?ver=0.0.10"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.11"></script>
+  <script src="../../dist/lunr.js?ver=0.0.11"></script>
+  <script src="../../dist/knowledge.min.js?ver=0.0.11"></script>
 
 </body>
 </html>
