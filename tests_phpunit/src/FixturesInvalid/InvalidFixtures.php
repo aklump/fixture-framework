@@ -9,6 +9,9 @@ abstract class NonInstantiableFixture implements FixtureInterface {
   public function id(): string {
     return '';
   }
+  public function description(): string {
+    return '';
+  }
   public function __invoke(): void {}
   public function onSuccess(bool $silent = FALSE) {}
   public function onFailure(\AKlump\FixtureFramework\Exception\FixtureException $e, bool $silent = FALSE) {}
@@ -23,6 +26,9 @@ class NoInterfaceFixture {
 
 class NoAttributeFixture implements FixtureInterface {
   public function id(): string {
+    return '';
+  }
+  public function description(): string {
     return '';
   }
   public function __invoke(): void {}

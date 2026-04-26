@@ -63,6 +63,7 @@ class FixtureInstantiatorTest extends TestCase {
   public function testThrowsIfIdCannotBeResolved() {
     $class = new class implements FixtureInterface {
       public function id(): string { return ''; }
+      public function description(): string { return ''; }
       public function __invoke(): void {}
       public function onSuccess(bool $silent = FALSE) {}
       public function onFailure(\AKlump\FixtureFramework\Exception\FixtureException $e, bool $silent = FALSE) {}
@@ -108,6 +109,7 @@ class FixtureInstantiatorTest extends TestCase {
       public RunOptions $options;
       public \AKlump\FixtureFramework\Runtime\RunContext $runContext;
       public function id(): string { return 'test'; }
+      public function description(): string { return ''; }
       public function __invoke(): void {}
       public function onSuccess(bool $silent = FALSE) {}
       public function onFailure(\AKlump\FixtureFramework\Exception\FixtureException $e, bool $silent = FALSE) {}
@@ -135,6 +137,7 @@ class FixtureInstantiatorTest extends TestCase {
       public function setRunOptions(RunOptions $options): void { $this->options = $options; }
       public function options(): RunOptions { return $this->options; }
       public function id(): string { return 'test'; }
+      public function description(): string { return ''; }
       public function __invoke(): void {}
       public function onSuccess(bool $silent = FALSE) {}
       public function onFailure(\AKlump\FixtureFramework\Exception\FixtureException $e, bool $silent = FALSE) {}
@@ -151,6 +154,7 @@ class FixtureInstantiatorTest extends TestCase {
       public function setFixtureDefinition(array $definition): void { $this->definition = $definition; }
       public function fixture(): array { return $this->definition; }
       public function id(): string { return 'test'; }
+      public function description(): string { return ''; }
       public function __invoke(): void {}
       public function onSuccess(bool $silent = FALSE) {}
       public function onFailure(\AKlump\FixtureFramework\Exception\FixtureException $e, bool $silent = FALSE) {}
@@ -166,6 +170,7 @@ class FixtureInstantiatorTest extends TestCase {
       public function setRunContext(\AKlump\FixtureFramework\Runtime\RunContext $run_context): void { $this->runContext = $run_context; }
       public function context(): \AKlump\FixtureFramework\Runtime\RunContext { return $this->runContext; }
       public function id(): string { return 'test'; }
+      public function description(): string { return ''; }
       public function __invoke(): void {}
       public function onSuccess(bool $silent = FALSE) {}
       public function onFailure(\AKlump\FixtureFramework\Exception\FixtureException $e, bool $silent = FALSE) {}

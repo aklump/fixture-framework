@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added optional `description` metadata to the `Fixture` attribute for short, human-readable fixture summaries.
+- Added `\AKlump\FixtureFramework\FixtureInterface::description` and optional `description` metadata to the `Fixture` attribute for short, human-readable fixture summaries.
 
 ### Changed
 
@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `RunOptions` constructor now has optional `$options` and `$validator` parameters.
 
 ### Migration Guide
+
+#### `FixtureInterface`
+
+If your fixture implements `FixtureInterface` directly (and does not extend `AbstractFixture`), you must now implement the `description(): string` method.
 
 #### Fixture auto-wiring
 

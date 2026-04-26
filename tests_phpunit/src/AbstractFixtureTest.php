@@ -142,6 +142,15 @@ class AbstractFixtureTest extends TestCase {
     $this->assertEquals('fixture_a', $fixture->id());
   }
 
+  public function testDescriptionReturnsValueFromMetadata() {
+    $instantiator = new FixtureInstantiator(new RunOptions([]), $this->createMock(RunContextValidator::class));
+    $fixture = $instantiator(
+      ['class' => Fixtures\FixtureA::class, 'description' => 'A test fixture description.'],
+      $this->createMock(RunContextStore::class)
+    );
+    $this->assertEquals('A test fixture description.', $fixture->description());
+  }
+
   public function testInstantiationThrowsWhenIdCannotBeResolved() {
     $instantiator = new FixtureInstantiator(new RunOptions([]), $this->createMock(RunContextValidator::class));
     $this->expectException(\InvalidArgumentException::class);

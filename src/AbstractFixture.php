@@ -24,6 +24,10 @@ abstract class AbstractFixture implements
     return $this->fixture()['id'] ?? '';
   }
 
+  public function description(): string {
+    return $this->fixture()['description'] ?? '';
+  }
+
   public function onSuccess(bool $silent = FALSE) {
     if (!$silent) {
       echo "Done." . PHP_EOL;

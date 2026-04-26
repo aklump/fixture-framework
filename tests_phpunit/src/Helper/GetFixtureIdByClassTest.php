@@ -40,6 +40,9 @@ abstract class AbstractFixtureForTest implements FixtureInterface {
   public function id(): string {
     return '';
   }
+  public function description(): string {
+    return '';
+  }
   public function __invoke(): void {
   }
   public function onSuccess(bool $silent = FALSE) {
@@ -53,6 +56,9 @@ class NotAFixture {
 
 class FixtureWithoutAttribute implements FixtureInterface {
   public function id(): string {
+    return '';
+  }
+  public function description(): string {
     return '';
   }
   public function __invoke(): void {
