@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en" data-knowledge-id="1735d351-b9aa-4012-8f59-91cd9f8f7504">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.10">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.10">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.10">
+        <title>Fixture Framework</title>
+  </head>
+<body class="my-5">
+
+<header class="header bg-light fixed-top p-2 pt-1">
+  <div class="container-md">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="header__breadcrumbs flex-shrink-0 flex-grow-1 me-3">
+        <nav aria-label="breadcrumb">
+  <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+      <a class="fw-bold" href="../../index.html">Fixture Framework</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a class="fw-bold" href="#" data-bs-toggle="offcanvas"
+         data-bs-target="#table-of-contents"
+         aria-controls="table-of-contents">TOC</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="readme.html">General</a></li>
+  </ol>
+</nav>
+
+      </div>
+      <div class="header__tags me-3">  </div>
+      <div class="header__page-numbers flex-shrink-1">1
+        / 2</div>
+    </div>
+  </div>
+</header>
+
+<main class="container-md flex-column">
+  <div class="row mb-5 pt-5">
+    <article class="col">
+      <h1 class="mb-4 text-primary">Fixture Framework</h1>
+      <p><img class="img-fluid" src="../../images/hero.jpg" alt="main" /></p>
+<p>A lightweight PHP framework for fixture management that prepares application state for repeatable workflows such as testing, local development, and environment-specific setup.</p>
+<p>A fixture is a discoverable, ordered unit of setup logic. Use fixtures whenever you need to create, sanitize, enable, normalize, or otherwise prepare your application into a known state.</p>
+<p>Each fixture class (usually <code>extends \AKlump\FixtureFramework\AbstractFixture</code>) should be responsible for a single atomic concern, such as creating a user, sanitizing imported data, or enabling development modules.</p>
+<h2>Key Features</h2>
+<ul>
+<li><strong>Attribute-based Metadata</strong>: No docblock parsing; uses <code>#[Fixture]</code> for configuration.</li>
+<li><strong>Composer Discovery</strong>: Scans <code>vendor/</code> and project directories using Composer's autoload metadata.</li>
+<li><strong>Deterministic Ordering</strong>: Supports weights and <code>after</code>/<code>before</code> dependencies with topological sorting.</li>
+<li><strong>Cached Discovery</strong>: Fast execution via JSON indexing.</li>
+<li><strong>Global Options</strong>: Pass a shared options array to every fixture.</li>
+</ul>
+<h2>Install with Composer</h2>
+<ol>
+<li><p>Because this is an unpublished package, you must define it's repository in
+your project's <em>composer.json</em> file. Add the following to <em>composer.json</em> in
+the <code>repositories</code> array:</p>
+<pre><code class="json"> {
+  "type": "github",
+  "url": "https://github.com/aklump/fixture-framework"
+ }
+</code></pre>
+</li>
+<li><p>Require this package:</p>
+<pre><code> composer require --dev aklump/fixture-framework:^0.0
+</code></pre>
+</li>
+</ol>
+<h2>Quick Start</h2>
+<p>This example uses a test-oriented directory such as <code>e2e/</code>, but fixtures can be used for any repeatable application setup workflow, including local development preparation and post-import sanitization.</p>
+<ol>
+<li><code>mkdir e2e/src/Fixture/</code></li>
+<li>Map it to a namespace in <code>composer.json</code></li>
+</ol>
+<pre><code class="json">{
+  "autoload-dev": {
+    "psr-4": {
+      "MyApp\\Tests\\": [
+        "e2e/src/"
+      ]
+    }
+  }
+}
+</code></pre>
+<ol>
+<li>Create your first fixture <code>class MyApp\Tests\Fixture\SomeFixture extends \AKlump\FixtureFramework\AbstractFixture</code></li>
+<li>Be sure to use <code>#[Fixture(id: 'some_fixture')]</code></li>
+<li><code>mkdir bin/</code></li>
+<li>Create the runner <code>bin/setup-fixtures.php</code>, changing <code>'MyApp\\Tests\\Fixture'</code> to the appropriate namespace.</li>
+<li>Run it for your workflow, for example to prepare local state, sanitize imported content, or set up test prerequisites.</li>
+<li>Flush the cache after creating new classes, e.g. <code>bin/setup-fixtures.php --flush</code></li>
+</ol>
+<h2>Core Components</h2>
+<h3>1. <code>FixtureInterface</code></h3>
+<p>Every fixture must implement this interface:</p>
+<p><strong>File:</strong> <code>FixtureInterface.php</code></p>
+<pre><code class="php">&lt;?php
+
+namespace AKlump\FixtureFramework;
+
+use AKlump\FixtureFramework\Exception\FixtureException;
+
+interface FixtureInterface {
+
+  public function id(): string;
+
+  public function __invoke(): void;
+
+  public function onSuccess(bool $silent = FALSE);
+
+  public function onFailure(FixtureException $e, bool $silent = FALSE);
+}
+</code></pre>
+<h3>2. <code>#[Fixture]</code> Attribute</h3>
+<p>Used to identify classes as fixtures and to define fixture metadata.</p>
+<ul>
+<li><code>id</code> (string, required): Unique identifier.</li>
+<li><code>weight</code> (int, default 0): Lower weights run earlier.</li>
+<li><code>after</code> (array, optional): IDs of fixtures that must run before this one.</li>
+<li><code>before</code> (array, optional): IDs of fixtures that must run after this one.</li>
+<li><code>tags</code> (array, optional): Metadata for future filtering.</li>
+<li><code>discoverable</code> (bool, default true): Set to <code>false</code> to hide from discovery.</li>
+</ul>
+<pre><code class="php">#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
+class ExampleFixture extends AbstractFixture {
+</code></pre>
+<h3>3. <code>AbstractFixture</code> Class</h3>
+<p>The <code>AbstractFixture</code> class provides a base implementation of <code>FixtureInterface</code> and includes the <code>FixtureMetadataTrait</code>, <code>FixtureRunContextTrait</code>, and <code>FixtureOptionsTrait</code>. Extending this class simplifies fixture development and allows for custom success/failure handling.</p>
+<p><strong>File:</strong> <code>ExampleFixture.php</code></p>
+<pre><code class="php">&lt;?php
+
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
+
+#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
+class ExampleFixture extends AbstractFixture {
+
+  public function __invoke(): void {
+    $fixture_id = $this-&gt;fixture['id'];
+  }
+}
+</code></pre>
+<h4>Customizing Success and Failure</h4>
+<p>You can override <code>onSuccess</code> and <code>onFailure</code> to provide custom feedback.</p>
+<p><strong>File:</strong> <code>CustomOutputFixture.php</code></p>
+<pre><code class="php">&lt;?php
+
+use AKlump\FixtureFramework\AbstractFixture;
+use AKlump\FixtureFramework\Fixture;
+use AKlump\FixtureFramework\Exception\FixtureException;
+
+#[Fixture(id: 'custom_output')]
+class CustomOutputFixture extends AbstractFixture {
+
+  public function __invoke(): void {
+    // ...
+  }
+
+  public function onSuccess(bool $silent = FALSE) {
+    if (!$silent) {
+      echo "✅ Successfully completed!" . PHP_EOL;
+    }
+  }
+
+  public function onFailure(FixtureException $e, bool $silent = FALSE) {
+    if (!$silent) {
+      echo "❌ Failed: " . $e-&gt;getMessage() . PHP_EOL;
+    }
+    throw $e;
+  }
+
+}
+</code></pre>
+<h3>4. Injected Properties</h3>
+<p>When using <code>AbstractFixture</code>, or the respective traits, the following properties are automatically injected into the fixture instance by the <code>FixtureRunner</code>:</p>
+<ul>
+<li><code>$this-&gt;fixture()</code> (or <code>$this-&gt;fixture</code> for BC): (array) Contains the fixture's metadata (id, weight, tags, etc.).</li>
+<li><code>$this-&gt;context()</code> (or <code>$this-&gt;runContext</code> for BC): (<code>\AKlump\FixtureFramework\RunContext</code>) A shared mutable runtime output across all fixtures in a single run.</li>
+<li><code>$this-&gt;options()</code> (or <code>$this-&gt;options</code> for BC): (<code>\AKlump\FixtureFramework\RunOptions</code>) A read-only API for the global run options.</li>
+</ul>
+<h4>Auto-wiring via Interfaces</h4>
+<p>Auto-wiring is triggered by the implementation of specific capability interfaces:</p>
+<ul>
+<li><code>FixtureDefinitionAwareInterface</code></li>
+<li><code>RunOptionsAwareInterface</code></li>
+<li><code>RunContextAwareInterface</code></li>
+</ul>
+<p>The <code>AbstractFixture</code> class implements all of these interfaces. If you create a custom fixture that does not extend <code>AbstractFixture</code>, you must implement these interfaces to receive injection.</p>
+<h4>Accessing Metadata via <code>FixtureMetadataTrait</code></h4>
+<p>If you want your fixture to have access to its own metadata (for example, to get the <code>id</code> or <code>tags</code> defined in the attribute), you can use the <code>FixtureMetadataTrait</code>.</p>
+<p><strong>File:</strong> <code>FixtureMetadataTrait.php</code></p>
+<pre><code class="php">&lt;?php
+
+namespace AKlump\FixtureFramework\Traits;
+
+/**
+ * Trait to provide a common property for accessing fixture metadata.
+ *
+ * Use this trait in your Fixture classes to have the metadata automatically
+ * populated by the FixtureRunner before the __invoke() method is called.
+ */
+trait FixtureMetadataTrait {
+
+  /**
+   * The fixture metadata record as discovered by FixtureDiscovery.
+   *
+   * @var array
+   *
+   * @deprecated Use fixture() instead, this property will be made private in a
+   * future version.
+   */
+  public array $fixture;
+
+  public function setFixtureDefinition(array $definition): void {
+    $this-&gt;fixture = $definition;
+  }
+
+  public function fixture(): array {
+    return $this-&gt;fixture;
+  }
+
+}
+</code></pre>
+<p>This trait adds a public <code>array $fixture</code> property to your class. The <code>FixtureRunner</code> detects the <code>FixtureDefinitionAwareInterface</code> (which <code>AbstractFixture</code> implements) and populates it with the fixture's metadata record before calling <code>__invoke()</code>.</p>
+<pre><code class="php">  public function __invoke(): void {
+    $fixture_id = $this-&gt;fixture['id'];
+</code></pre>
+<h4>Run Context</h4>
+<p>The <code>RunContext</code> is a shared, mutable data store that persists throughout a single execution run. It is the primary mechanism for fixtures to communicate or pass data to downstream fixtures (e.g., passing a created user's ID to a subsequent profile-creation fixture).</p>
+<ul>
+<li><strong>Shared Mutable State</strong>: Every fixture in the collection receives the same <code>RunContext</code> instance, allowing state to be built up across the entire run.</li>
+<li><strong>Strict Namespacing</strong>: For data integrity, a fixture may only <code>set()</code> keys that are prefixed with its own fixture ID (e.g., <code>my_fixture.entity_id</code>). This prevents fixtures from accidentally overwriting each other's data.</li>
+<li><strong>Data Retrieval</strong>: Use <code>get()</code> to retrieve values, <code>has()</code> to check for existence, or <code>require()</code> to throw an exception if a critical piece of shared data is missing.</li>
+</ul>
+<p><strong>File:</strong> <code>run_context.php</code></p>
+<pre><code class="php">&lt;?php
+
+#[\AKlump\FixtureFramework\Fixture(id: 'fixture_a')]
+class FixtureA extends \AKlump\FixtureFramework\AbstractFixture {
+
+  public function __invoke(): void {
+    $this-&gt;runContext-&gt;set('fixture_a.required_data', 'lorem');
+    $this-&gt;runContext-&gt;set('fixture_a.optional_data', 'ipsum');
+  }
+}
+
+#[\AKlump\FixtureFramework\Fixture(id: 'fixture_b')]
+class FixtureB extends \AKlump\FixtureFramework\AbstractFixture {
+
+  public function __invoke(): void {
+    // This will throw an exception if the required data is not set.
+    $lorem = $this-&gt;runContext-&gt;require('fixture_a.required_data');
+
+    if ($this-&gt;runContext-&gt;has('fixture_a.optional_data')) {
+      $ipsum = $this-&gt;runContext-&gt;get('fixture_a.optional_data');
+      // Do something with $ipsum, which may be an empty string. the `has()`
+      // method only checks for existence, not value.
+    }
+  }
+}
+</code></pre>
+<h4>Global Run Options</h4>
+<p>Run options are provided to the <code>FixtureRunner</code> as an array or a <code>RunOptions</code> object. Inside a fixture, you can access them via <code>$this-&gt;options</code> which will always be an instance of <code>\AKlump\FixtureFramework\RunOptions</code>.</p>
+<p><strong>Important:</strong> Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed unless you extend <code>\AKlump\FixtureFramework\Runtime\RunOptionsValidator</code> as show below.</p>
+<pre><code class="php">  public function __invoke(): void {
+    $env = $this-&gt;options-&gt;get('env');
+    $url = $this-&gt;options-&gt;require('base_url');
+    $all = $this-&gt;options-&gt;all();
+</code></pre>
+<h5>Allowing Custom Run Options</h5>
+<p><strong>File:</strong> <code>RunOptionsValidator.php</code></p>
+<pre><code class="php">&lt;?php
+
+namespace AKlump\Directio\FixtureFramework\Runtime;
+
+use AKlump\FixtureFramework\Exception\InvalidRunOptionsException;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class RunOptionsValidator extends \AKlump\FixtureFramework\Runtime\RunOptionsValidator {
+
+  public function validate(array $options, string $path = ''): void {
+    if (isset($options['output'])) {
+      if ($options['output'] instanceof OutputInterface) {
+        return;
+      }
+      throw new InvalidRunOptionsException("Invalid output option, it must be an instance of " . OutputInterface::class);
+    }
+
+    parent::validate($options, $path);
+  }
+
+}
+</code></pre>
+<h2>Design Principles</h2>
+<ol>
+<li>One fixture should represent a single atomic setup concern.</li>
+<li>Fixtures should prepare a known, repeatable application state.</li>
+<li>Fixtures may be used for testing, local development, imports, or other environment-specific workflows.</li>
+<li>Ordering should express dependency, not implementation detail.</li>
+</ol>
+<h2>Common Use Cases</h2>
+<p>Fixtures are useful anywhere your application needs repeatable state preparation, for example:</p>
+<ul>
+<li>creating prerequisite users, content, or configuration for tests</li>
+<li>sanitizing production-derived data for safe local development</li>
+<li>enabling development-only modules or features</li>
+<li>normalizing imported assets before local use</li>
+<li>preparing demo or QA environments with known content/state</li>
+</ul>
+<h2>Discovery and Execution</h2>
+<h3>Discovery</h3>
+<p><code>FixtureDiscovery</code> uses <code>vendor/composer/autoload_psr4.php</code> and <code>vendor/composer/autoload_classmap.php</code> to find classes implementing <code>FixtureInterface</code> with the <code>#[Fixture]</code> attribute. You may hide a fixture by setting <code>discoverable: false</code> in the <code>#[Fixture]</code> attribute.</p>
+<h3>Ordering</h3>
+<p><code>FixtureOrderer</code> performs a topological sort based on <code>after</code>/<code>before</code> rules, tie-breaking with <code>weight</code> and lexicographical <code>id</code>.</p>
+<h3>Runner <code>setup-fixtures.php</code></h3>
+<p>To run your fixtures, create a script such as <code>bin/setup-fixtures.php</code> that bootstraps your application and executes the discovered fixtures for the desired workflow.</p>
+<p><strong>File:</strong> <code>setup-fixtures.php</code></p>
+<pre><code class="php">#!/usr/bin/env php
+&lt;?php
+
+use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
+use AKlump\FixtureFramework\Runtime\FixtureInstantiator;
+use AKlump\FixtureFramework\Runtime\FixtureRunner;
+use AKlump\FixtureFramework\Runtime\RunContextValidator;
+use AKlump\FixtureFramework\Runtime\RunOptions;
+use AKlump\FixtureFramework\Runtime\RunOptionsValidator;
+
+$vendor_dir = __DIR__ . '/../vendor';
+require_once $vendor_dir . '/autoload.php';
+
+$flush = in_array('--flush', $argv);
+$silent = in_array('--silent', $argv);
+$filter = '';
+foreach ($argv as $arg) {
+  if (str_starts_with($arg, '--filter=')) {
+    $filter = substr($arg, 9);
+    break;
+  }
+}
+
+try {
+  $definitions = (new \AKlump\FixtureFramework\Discovery\DiscoverFixtureDefinitions())($vendor_dir, [
+      'MyApp\Tests\Fixture',
+  ], $flush, $silent, $filter);
+}
+catch (Exception $e) {
+  echo "Error ordering fixtures: " . $e-&gt;getMessage() . "\n";
+  exit(1);
+}
+
+try {
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\RunOptionsValidator
+   * $run_options_validator This class can be overridden to provide custom
+   * runtime options validation.
+   */
+  $run_options_validator = new RunOptionsValidator();
+
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\RunOptions The immutable runtime
+   * options provided to all fixtures.
+   */
+  $run_options = new RunOptions([
+      'env' =&gt; 'test',
+      'url' =&gt; 'https://website.com/',
+      'drush' =&gt; 'lando nxdb_drush',
+  ], $run_options_validator);
+
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\FixtureInstantiator This class can be
+   * overridden to provide custom runtime context validation.
+   */
+  $run_context_validator = new RunContextValidator();
+
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\FixtureInstantiator This class can be
+   * overridden to provide custom fixture instantiation if needed.
+   */
+  $instantiator = new FixtureInstantiator($run_options, $run_context_validator);
+
+  /**
+   * @var \AKlump\FixtureFramework\FixtureInterface[] $fixtures The list of
+   * fixtures to run as objects.
+   */
+  $fixtures = (new FixtureCollectionBuilder($instantiator))($definitions);
+
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\FixtureRunner The class in charge of
+   * running the fixtures.
+   */
+  $runner = new FixtureRunner($fixtures);
+  $runner-&gt;run($silent);
+}
+catch (\Exception $e) {
+  print $e-&gt;getMessage() . "\n";
+  exit(1);
+}
+</code></pre>
+<h2>Cache Management</h2>
+<p><code>FixtureCache</code> stores discovered metadata. It invalidates automatically if Composer's autoload files change. Use the <code>$rebuild_cache</code> parameter on <code>\AKlump\FixtureFramework\Helper\GetFixtures</code> to force discovery.</p>
+    </article>
+  </div>
+</main>
+
+  <footer class="footer d-flex justify-content-center">
+    <div class="flex-column justify-content-center">
+              Version:
+        <strong>0.0.10</strong>
+        &bull;
+                    Last Update: <strong>4/26/2026</strong>
+          </div>
+  </footer>
+
+
+<nav class="nav d-flex justify-content-center align-items-center
+  fixed-bottom">
+  <div class="btn-group flex-fill">
+              <a href="readme.html" class="btn nav__prev-chapter btn-secondary"><i class="bi
+      bi-caret-left-fill"></i> Fixture Framework</a>
+  
+    
+              <span class="btn nav__prev-page js-nav__prev-page
+    btn-primary"></span>
+  
+    
+    <a class="nav__toc btn btn-light" href="#"
+       data-bs-toggle="offcanvas"
+       data-bs-target="#table-of-contents"
+       aria-controls="table-of-contents"><i class="bi
+           bi-list-ol"></i></a>
+    
+              <a href="changelog.html" class="btn nav__next-page js-nav__next-page
+    btn-primary"><i class="bi bi-file-earmark"></i> Changelog <i class="bi
+       bi-caret-right-fill"></i></a>
+  
+    
+              <span class="btn nav__next-chapter btn-secondary "></span>
+  
+  </div>
+</nav>
+
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="table-of-contents"
+     aria-labelledby="table-of-contents__title" data-bs-keyboard="true">
+  <div class="offcanvas-header">
+    <h1 class="h6 offcanvas-title js-chapter-list-title"
+        id="table-of-contents__title">All
+      Chapters
+      &amp; Pages</h1>
+    <h1 class="d-none h6 offcanvas-title js-search-results-title"
+        id="table-of-contents__title">Search Results</h1>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+          <input class="js-search form-control mb-4" type="search"
+             placeholder="Search docs..."
+             aria-label="Search">
+      <div class="js-search-results d-none">
+        <h2 class="h4 mt-4">Matched Pages</h2>
+        <ol class="list-unstyled">
+                                              <li data-page="readme" value="1">
+      <a class="js-page-link" href="readme.html">Fixture Framework<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="changelog" value="2">
+      <a class="js-page-link" href="changelog.html">Changelog<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                              </ol>
+      </div>
+        
+    <div class="js-chapter-list">
+              <h2 class="h4 mt-4">General</h2>
+        <ol>
+                                <li data-page="readme" value="1">
+      <a class="js-page-link" href="readme.html">Fixture Framework</a>
+    </li>
+  
+                                <li data-page="changelog" value="2">
+      <a class="js-page-link" href="changelog.html">Changelog</a>
+    </li>
+  
+                  </ol>
+          </div>
+  </div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1"
+     aria-labelledby="modal-title" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="js-modal-title modal-title" id="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mt-1 mb-4">
+                  </p>
+        
+                
+        <ul class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="readme.html">Fixture Framework</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="changelog.html">Changelog</a>
+                              </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.10"></script>
+  <script src="../../dist/lunr.js?ver=0.0.10"></script>
+  <script src="../../dist/knowledge.min.js?ver=0.0.10"></script>
+
+</body>
+</html>

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `FixtureInstantiator::__invoke()` now focuses on instantiating a single fixture definition.
 - `FixtureCollectionBuilder` now receives a pre-configured `FixtureInstantiator`.
 - `FixtureCollectionBuilder` now owns the creation of the shared `RunContextStore`.
+- `RunOptions` constructor now has optional `$options` and `$validator` parameters.
 
 ### Migration Guide
 

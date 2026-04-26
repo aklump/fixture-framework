@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en" data-knowledge-id="1735d351-b9aa-4012-8f59-91cd9f8f7504">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.10">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.10">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.10">
+        <title>Changelog | Fixture Framework</title>
+  </head>
+<body class="my-5">
+
+<header class="header bg-light fixed-top p-2 pt-1">
+  <div class="container-md">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="header__breadcrumbs flex-shrink-0 flex-grow-1 me-3">
+        <nav aria-label="breadcrumb">
+  <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item">
+      <a class="fw-bold" href="../../index.html">Fixture Framework</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a class="fw-bold" href="#" data-bs-toggle="offcanvas"
+         data-bs-target="#table-of-contents"
+         aria-controls="table-of-contents">TOC</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="readme.html">General</a></li>
+  </ol>
+</nav>
+
+      </div>
+      <div class="header__tags me-3">  </div>
+      <div class="header__page-numbers flex-shrink-1">2
+        / 2</div>
+    </div>
+  </div>
+</header>
+
+<main class="container-md flex-column">
+  <div class="row mb-5 pt-5">
+    <article class="col">
+      <h1 class="mb-4 text-primary">Changelog</h1>
+      <p>All notable changes to this project will be documented in this file.</p>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2>[Unreleased]</h2>
+<h3>Changed</h3>
+<ul>
+<li>Fixture auto-wiring is now interface-driven.</li>
+<li>Added <code>FixtureDefinitionAwareInterface</code>, <code>RunOptionsAwareInterface</code>, and <code>RunContextAwareInterface</code>.</li>
+<li>Existing traits now provide setter/accessor methods.</li>
+<li>Fixture instantiation dependencies (<code>RunOptions</code>, <code>RunContextValidator</code>) have moved into <code>FixtureInstantiator</code> constructor.</li>
+<li><code>FixtureInstantiator::__invoke()</code> now focuses on instantiating a single fixture definition.</li>
+<li><code>FixtureCollectionBuilder</code> now receives a pre-configured <code>FixtureInstantiator</code>.</li>
+<li><code>FixtureCollectionBuilder</code> now owns the creation of the shared <code>RunContextStore</code>.</li>
+<li><code>RunOptions</code> constructor now has optional <code>$options</code> and <code>$validator</code> parameters.</li>
+</ul>
+<h3>Migration Guide</h3>
+<h4>Fixture auto-wiring</h4>
+<p>Fixture auto-wiring is now based on explicit capability interfaces instead of public property detection.</p>
+<p>If your fixture extends <code>AbstractFixture</code>, no immediate change is required. The existing public properties still work, and new accessor methods are available:</p>
+<ul>
+<li><code>$this-&gt;fixture()</code> instead of <code>$this-&gt;fixture</code></li>
+<li><code>$this-&gt;options()</code> instead of <code>$this-&gt;options</code></li>
+<li><code>$this-&gt;context()</code> instead of <code>$this-&gt;runContext</code></li>
+</ul>
+<p>If your fixture does not extend <code>AbstractFixture</code> but previously declared public properties such as <code>$options</code>, <code>$fixture</code>, or <code>$runContext</code> to receive injection, update it to implement the appropriate interface:</p>
+<ul>
+<li><code>FixtureDefinitionAwareInterface</code></li>
+<li><code>RunOptionsAwareInterface</code></li>
+<li><code>RunContextAwareInterface</code></li>
+</ul>
+<h4><code>FixtureInstantiator</code></h4>
+<p>If you were manually invoking the instantiator, update your code as follows:</p>
+<pre><code class="php">// Before
+$instantiator = new FixtureInstantiator();
+$fixture = $instantiator($definition, $options, $store, $validator);
+
+// After
+$instantiator = new FixtureInstantiator($options, $validator);
+$fixture = $instantiator($definition, $store);
+</code></pre>
+<h4><code>FixtureCollectionBuilder</code></h4>
+<p>Update <code>FixtureCollectionBuilder</code> construction to pass a pre-configured <code>FixtureInstantiator</code>:</p>
+<pre><code class="php">// Before
+$builder = new FixtureCollectionBuilder($options, $validator);
+$fixtures = $builder($definitions);
+
+// After
+$instantiator = new FixtureInstantiator($options, $validator);
+$builder = new FixtureCollectionBuilder($instantiator);
+$fixtures = $builder($definitions);
+</code></pre>
+<h2>[0.0.9] - 2026-04-17</h2>
+<h3>Changed</h3>
+<ul>
+<li>bin/setup-fixtures to bin/setup-fixtures.php</li>
+</ul>
+<h2>[0.0.8] - 2026-04-12</h2>
+<h3>Added</h3>
+<ul>
+<li>Added <code>\AKlump\FixtureFramework\FixtureInterface::id</code></li>
+<li>Added structured discovery of fixture definitions before runtime instantiation.</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Fixture setup now flows through separate discovery and runtime phases</li>
+<li>Fixture identity is resolved earlier in the lifecycle @see <code>\AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder</code></li>
+<li>Shared run context is now injected during fixture instantiation.</li>
+<li>Documentation and setup examples were updated to match the new execution model.</li>
+<li>Internal classes were reorganized into <code>Discovery</code>, <code>Runtime</code>, and <code>Traits</code> namespaces.</li>
+<li>🚨BREAKING CHANGE! Replace every fixture <code>setUp()</code> method with <code>__invoke()</code>.</li>
+<li>🚨BREAKING CHANGE! If your fixture relied on lazy ID lookup, resolve the ID during instantiation instead.</li>
+<li>🚨BREAKING CHANGE! Update any code that imports or instantiates renamed classes from the old structure.</li>
+<li>🚨BREAKING CHANGE! <code>setup-runner.php</code> has changed significantly, update your setup scripts accordingly.</li>
+</ul>
+    </article>
+  </div>
+</main>
+
+  <footer class="footer d-flex justify-content-center">
+    <div class="flex-column justify-content-center">
+              Version:
+        <strong>0.0.10</strong>
+        &bull;
+                    Last Update: <strong>4/26/2026</strong>
+          </div>
+  </footer>
+
+
+<nav class="nav d-flex justify-content-center align-items-center
+  fixed-bottom">
+  <div class="btn-group flex-fill">
+              <a href="readme.html" class="btn nav__prev-chapter btn-secondary"><i class="bi
+      bi-caret-left-fill"></i> Fixture Framework</a>
+  
+    
+              <a href="readme.html" class="btn nav__prev-page js-nav__prev-page
+    btn-primary"><i class="bi
+      bi-caret-left-fill"></i></a>
+  
+    
+    <a class="nav__toc btn btn-light" href="#"
+       data-bs-toggle="offcanvas"
+       data-bs-target="#table-of-contents"
+       aria-controls="table-of-contents"><i class="bi
+           bi-list-ol"></i></a>
+    
+              <span class="btn nav__next-page js-nav__next-page
+    btn-primary"></span>
+  
+    
+              <span class="btn nav__next-chapter btn-secondary "></span>
+  
+  </div>
+</nav>
+
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="table-of-contents"
+     aria-labelledby="table-of-contents__title" data-bs-keyboard="true">
+  <div class="offcanvas-header">
+    <h1 class="h6 offcanvas-title js-chapter-list-title"
+        id="table-of-contents__title">All
+      Chapters
+      &amp; Pages</h1>
+    <h1 class="d-none h6 offcanvas-title js-search-results-title"
+        id="table-of-contents__title">Search Results</h1>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+          <input class="js-search form-control mb-4" type="search"
+             placeholder="Search docs..."
+             aria-label="Search">
+      <div class="js-search-results d-none">
+        <h2 class="h4 mt-4">Matched Pages</h2>
+        <ol class="list-unstyled">
+                                              <li data-page="readme" value="1">
+      <a class="js-page-link" href="readme.html">Fixture Framework<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                                    <li data-page="changelog" value="2">
+      <a class="js-page-link" href="changelog.html">Changelog<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
+                              </ol>
+      </div>
+        
+    <div class="js-chapter-list">
+              <h2 class="h4 mt-4">General</h2>
+        <ol>
+                                <li data-page="readme" value="1">
+      <a class="js-page-link" href="readme.html">Fixture Framework</a>
+    </li>
+  
+                                <li data-page="changelog" value="2">
+      <a class="js-page-link" href="changelog.html">Changelog</a>
+    </li>
+  
+                  </ol>
+          </div>
+  </div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1"
+     aria-labelledby="modal-title" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="js-modal-title modal-title" id="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mt-1 mb-4">
+                  </p>
+        
+                
+        <ul class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="readme.html">Fixture Framework</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="changelog.html">Changelog</a>
+                              </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.10"></script>
+  <script src="../../dist/lunr.js?ver=0.0.10"></script>
+  <script src="../../dist/knowledge.min.js?ver=0.0.10"></script>
+
+</body>
+</html>
