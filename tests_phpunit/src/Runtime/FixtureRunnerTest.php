@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 class FixtureRunnerTest extends TestCase {
 
   private function buildFixtures(array $fixture_index, array $options = []): array {
-    $instantiator = new \AKlump\FixtureFramework\Runtime\FixtureInstantiator($options, new RunContextValidator());
+    $instantiator = new \AKlump\FixtureFramework\Runtime\FixtureInstantiator(new RunOptions($options), new RunContextValidator());
     $builder = new FixtureCollectionBuilder($instantiator);
 
     return $builder($fixture_index);

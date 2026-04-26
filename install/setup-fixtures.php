@@ -1,7 +1,12 @@
 #!/usr/bin/env php
 <?php
 
+use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
+use AKlump\FixtureFramework\Runtime\FixtureInstantiator;
+use AKlump\FixtureFramework\Runtime\FixtureRunner;
+use AKlump\FixtureFramework\Runtime\RunContextValidator;
 use AKlump\FixtureFramework\Runtime\RunOptions;
+use AKlump\FixtureFramework\Runtime\RunOptionsValidator;
 
 $vendor_dir = __DIR__ . '/../vendor';
 require_once $vendor_dir . '/autoload.php';
@@ -27,20 +32,46 @@ catch (Exception $e) {
 }
 
 try {
-  $run_options_validator = new \AKlump\FixtureFramework\Runtime\RunOptionsValidator();
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\RunOptionsValidator
+   * $run_options_validator This class can be overridden to provide custom
+   * runtime options validation.
+   */
+  $run_options_validator = new RunOptionsValidator();
+
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\RunOptions The immutable runtime
+   * options provided to all fixtures.
+   */
   $run_options = new RunOptions([
       'env' => 'test',
       'url' => 'https://website.com/',
       'drush' => 'lando nxdb_drush',
-      $run_options_validator,
-  ]);
+  ], $run_options_validator);
 
-  $run_context_validator = new \AKlump\FixtureFramework\Runtime\RunContextValidator();
-  $instantiator = new \AKlump\FixtureFramework\Runtime\FixtureInstantiator($run_options, $run_context_validator);
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\FixtureInstantiator This class can be
+   * overridden to provide custom runtime context validation.
+   */
+  $run_context_validator = new RunContextValidator();
 
-  $fixtures = (new \AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder($instantiator))($definitions);
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\FixtureInstantiator This class can be
+   * overridden to provide custom fixture instantiation if needed.
+   */
+  $instantiator = new FixtureInstantiator($run_options, $run_context_validator);
 
-  $runner = new \AKlump\FixtureFramework\Runtime\FixtureRunner($fixtures);
+  /**
+   * @var \AKlump\FixtureFramework\FixtureInterface[] $fixtures The list of
+   * fixtures to run as objects.
+   */
+  $fixtures = (new FixtureCollectionBuilder($instantiator))($definitions);
+
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\FixtureRunner The class in charge of
+   * running the fixtures.
+   */
+  $runner = new FixtureRunner($fixtures);
   $runner->run($silent);
 }
 catch (\Exception $e) {

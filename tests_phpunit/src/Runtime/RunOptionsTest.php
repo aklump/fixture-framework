@@ -15,6 +15,11 @@ use PHPUnit\Framework\TestCase;
  */
 class RunOptionsTest extends TestCase {
 
+  public function testEmptyConstructor() {
+    $options = new RunOptions();
+    $this->assertEmpty($options->all());
+  }
+
   public function testGet() {
     $options = new RunOptions(['env' => 'test']);
     $this->assertEquals('test', $options->get('env'));
@@ -56,5 +61,28 @@ class RunOptionsTest extends TestCase {
     $options = RunOptions::fromArray(['env' => 'prod']);
     $this->assertInstanceOf(RunOptions::class, $options);
     $this->assertEquals('prod', $options->get('env'));
+  }
+
+  public function testWithAddedOptions() {
+    $options = new RunOptions(['env' => 'test']);
+    $newOptions = $options->withAddedOptions(['debug' => true]);
+
+    $this->assertNotSame($options, $newOptions);
+    $this->assertEquals('test', $newOptions->get('env'));
+    $this->assertTrue($newOptions->get('debug'));
+    $this->assertEquals(['env' => 'test', 'debug' => true], $newOptions->all());
+  }
+
+  public function testWithAddedOptionsThrowsOnConflict() {
+    $options = new RunOptions(['env' => 'test']);
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('The following keys may not be overridden: env');
+    $options->withAddedOptions(['env' => 'prod']);
+  }
+
+  public function testWithAddedOptionsValidatesNewOptions() {
+    $options = new RunOptions(['env' => 'test']);
+    $this->expectException(InvalidRunOptionsException::class);
+    $options->withAddedOptions(['client' => new \stdClass()]);
   }
 }
