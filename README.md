@@ -79,6 +79,8 @@ interface FixtureInterface {
 
   public function id(): string;
 
+  public function description(): string;
+
   public function __invoke(): void;
 
   public function onSuccess(bool $silent = FALSE);
@@ -92,6 +94,7 @@ interface FixtureInterface {
 Used to identify classes as fixtures and to define fixture metadata.
 
 - `id` (string, required): Unique identifier.
+- `description` (string, optional): A short, plain-text summary of the fixture.
 - `weight` (int, default 0): Lower weights run earlier.
 - `after` (array, optional): IDs of fixtures that must run before this one.
 - `before` (array, optional): IDs of fixtures that must run after this one.
@@ -99,8 +102,34 @@ Used to identify classes as fixtures and to define fixture metadata.
 - `discoverable` (bool, default true): Set to `false` to hide from discovery.
 
 ```php
-#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
+#[Fixture(
+  id: 'example_fixture',
+  description: 'An example fixture that demonstrates metadata.',
+  weight: -10,
+  after: ['base_schema']
+)]
 class ExampleFixture extends AbstractFixture {
+```
+
+#### Usage Guidance for `description`
+
+The `description` field is intended for short, human-readable summaries suitable for compact display in CLI tables, catalogs, or reports. It should be a concise phrase or sentence.
+
+Class docblocks remain the appropriate place for longer developer-facing documentation, implementation details, assumptions, or warnings.
+
+```php
+/**
+ * Longer developer-facing explanation.
+ *
+ * May include implementation details, assumptions, examples, or warnings.
+ */
+#[Fixture(
+  id: 'users',
+  description: 'Creates baseline user records.',
+  tags: ['users', 'seed'],
+)]
+class UserFixture extends AbstractFixture {
+}
 ```
 
 ### 3. `AbstractFixture` Class
@@ -115,7 +144,12 @@ The `AbstractFixture` class provides a base implementation of `FixtureInterface`
 use AKlump\FixtureFramework\AbstractFixture;
 use AKlump\FixtureFramework\Fixture;
 
-#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
+#[Fixture(
+  id: 'example_fixture',
+  description: 'An example fixture that demonstrates metadata.',
+  weight: -10,
+  after: ['base_schema']
+)]
 class ExampleFixture extends AbstractFixture {
 
   public function __invoke(): void {

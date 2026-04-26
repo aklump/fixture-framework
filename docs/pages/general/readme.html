@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.10">
-      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.10">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.10">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.11">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.11">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.11">
         <title>Fixture Framework</title>
   </head>
 <body class="my-5">
@@ -108,6 +108,8 @@ interface FixtureInterface {
 
   public function id(): string;
 
+  public function description(): string;
+
   public function __invoke(): void;
 
   public function onSuccess(bool $silent = FALSE);
@@ -119,14 +121,36 @@ interface FixtureInterface {
 <p>Used to identify classes as fixtures and to define fixture metadata.</p>
 <ul>
 <li><code>id</code> (string, required): Unique identifier.</li>
+<li><code>description</code> (string, optional): A short, plain-text summary of the fixture.</li>
 <li><code>weight</code> (int, default 0): Lower weights run earlier.</li>
 <li><code>after</code> (array, optional): IDs of fixtures that must run before this one.</li>
 <li><code>before</code> (array, optional): IDs of fixtures that must run after this one.</li>
 <li><code>tags</code> (array, optional): Metadata for future filtering.</li>
 <li><code>discoverable</code> (bool, default true): Set to <code>false</code> to hide from discovery.</li>
 </ul>
-<pre><code class="php">#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
+<pre><code class="php">#[Fixture(
+  id: 'example_fixture',
+  description: 'An example fixture that demonstrates metadata.',
+  weight: -10,
+  after: ['base_schema']
+)]
 class ExampleFixture extends AbstractFixture {
+</code></pre>
+<h4>Usage Guidance for <code>description</code></h4>
+<p>The <code>description</code> field is intended for short, human-readable summaries suitable for compact display in CLI tables, catalogs, or reports. It should be a concise phrase or sentence.</p>
+<p>Class docblocks remain the appropriate place for longer developer-facing documentation, implementation details, assumptions, or warnings.</p>
+<pre><code class="php">/**
+ * Longer developer-facing explanation.
+ *
+ * May include implementation details, assumptions, examples, or warnings.
+ */
+#[Fixture(
+  id: 'users',
+  description: 'Creates baseline user records.',
+  tags: ['users', 'seed'],
+)]
+class UserFixture extends AbstractFixture {
+}
 </code></pre>
 <h3>3. <code>AbstractFixture</code> Class</h3>
 <p>The <code>AbstractFixture</code> class provides a base implementation of <code>FixtureInterface</code> and includes the <code>FixtureMetadataTrait</code>, <code>FixtureRunContextTrait</code>, and <code>FixtureOptionsTrait</code>. Extending this class simplifies fixture development and allows for custom success/failure handling.</p>
@@ -136,7 +160,12 @@ class ExampleFixture extends AbstractFixture {
 use AKlump\FixtureFramework\AbstractFixture;
 use AKlump\FixtureFramework\Fixture;
 
-#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
+#[Fixture(
+  id: 'example_fixture',
+  description: 'An example fixture that demonstrates metadata.',
+  weight: -10,
+  after: ['base_schema']
+)]
 class ExampleFixture extends AbstractFixture {
 
   public function __invoke(): void {
@@ -409,7 +438,7 @@ catch (\Exception $e) {
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>0.0.10</strong>
+        <strong>0.0.11</strong>
         &bull;
                     Last Update: <strong>4/26/2026</strong>
           </div>
@@ -518,9 +547,9 @@ catch (\Exception $e) {
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.10"></script>
-  <script src="../../dist/lunr.js?ver=0.0.10"></script>
-  <script src="../../dist/knowledge.min.js?ver=0.0.10"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.11"></script>
+  <script src="../../dist/lunr.js?ver=0.0.11"></script>
+  <script src="../../dist/knowledge.min.js?ver=0.0.11"></script>
 
 </body>
 </html>
