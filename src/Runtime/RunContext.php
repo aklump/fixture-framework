@@ -15,11 +15,11 @@ class RunContext {
   public function __construct(
     string $fixtureId,
     RunContextStore $store,
-    RunContextValidator $validator
+    ?RunContextValidator $validator = NULL,
   ) {
     $this->fixtureId = $fixtureId;
     $this->store = $store;
-    $this->validator = $validator;
+    $this->validator = $validator ?? new RunContextValidator();
   }
 
   public function set(string $key, mixed $value): void {
@@ -27,7 +27,7 @@ class RunContext {
     $this->store->set($key, $value);
   }
 
-  public function get(string $key, mixed $default = null): mixed {
+  public function get(string $key, mixed $default = NULL): mixed {
     return $this->store->get($key, $default);
   }
 

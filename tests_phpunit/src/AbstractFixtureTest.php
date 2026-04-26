@@ -60,15 +60,41 @@ class AbstractFixtureTest extends TestCase {
 
   public function testMetadataTraitProperty() {
     $fixture = new class extends AbstractFixture {
-      public function id(): string { return 'test'; }
       public function __invoke(): void {}
-      public function getFixture() { return $this->fixture; }
-      public function setFixture(array $f) { $this->fixture = $f; }
+      public function getFixture() { return $this->fixture(); }
     };
 
     $data = ['id' => 'foo'];
-    $fixture->setFixture($data);
+    $fixture->setFixtureDefinition($data);
     $this->assertEquals($data, $fixture->getFixture());
+    $this->assertEquals($data, $fixture->fixture());
+  }
+
+  public function testAbstractFixtureImplementsAwareInterfaces() {
+    $fixture = new class extends AbstractFixture {
+      public function __invoke(): void {}
+    };
+    $this->assertInstanceOf(\AKlump\FixtureFramework\Interface\FixtureDefinitionAwareInterface::class, $fixture);
+    $this->assertInstanceOf(\AKlump\FixtureFramework\Interface\RunOptionsAwareInterface::class, $fixture);
+    $this->assertInstanceOf(\AKlump\FixtureFramework\Interface\RunContextAwareInterface::class, $fixture);
+  }
+
+  public function testAccessorMethods() {
+    $fixture = new class extends AbstractFixture {
+      public function __invoke(): void {}
+    };
+
+    $definition = ['id' => 'foo'];
+    $fixture->setFixtureDefinition($definition);
+    $this->assertEquals($definition, $fixture->fixture());
+
+    $options = new RunOptions(['env' => 'test']);
+    $fixture->setRunOptions($options);
+    $this->assertSame($options, $fixture->options());
+
+    $runContext = $this->createMock(\AKlump\FixtureFramework\Runtime\RunContext::class);
+    $fixture->setRunContext($runContext);
+    $this->assertSame($runContext, $fixture->context());
   }
 
   public function testRunContextTraitProperty() {

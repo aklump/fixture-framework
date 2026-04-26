@@ -3,19 +3,25 @@
 namespace AKlump\FixtureFramework;
 
 use AKlump\FixtureFramework\Exception\FixtureException;
-use AKlump\FixtureFramework\Interface\InitializableFixtureInterface;
+use AKlump\FixtureFramework\Interface\FixtureDefinitionAwareInterface;
+use AKlump\FixtureFramework\Interface\RunOptionsAwareInterface;
+use AKlump\FixtureFramework\Interface\RunContextAwareInterface;
 use AKlump\FixtureFramework\Traits\FixtureMetadataTrait;
 use AKlump\FixtureFramework\Traits\FixtureRunContextTrait;
 use AKlump\FixtureFramework\Traits\FixtureOptionsTrait;
 
-abstract class AbstractFixture implements FixtureInterface, InitializableFixtureInterface {
+abstract class AbstractFixture implements
+  FixtureInterface,
+  FixtureDefinitionAwareInterface,
+  RunOptionsAwareInterface,
+  RunContextAwareInterface {
 
   use FixtureMetadataTrait;
   use FixtureRunContextTrait;
   use FixtureOptionsTrait;
 
   public function id(): string {
-    return $this->fixture['id'] ?? '';
+    return $this->fixture()['id'] ?? '';
   }
 
   public function onSuccess(bool $silent = FALSE) {
@@ -28,6 +34,4 @@ abstract class AbstractFixture implements FixtureInterface, InitializableFixture
     throw $e;
   }
 
-  public function initialize(): void {
-  }
 }

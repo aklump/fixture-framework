@@ -4,19 +4,19 @@ namespace AKlump\FixtureFramework\Runtime;
 
 use AKlump\FixtureFramework\FixtureInterface;
 use AKlump\FixtureFramework\Helper\GetFixtureIdByClass;
-use AKlump\FixtureFramework\Interface\InitializableFixtureInterface;
+use AKlump\FixtureFramework\Interface\FixtureDefinitionAwareInterface;
+use AKlump\FixtureFramework\Interface\RunContextAwareInterface;
+use AKlump\FixtureFramework\Interface\RunOptionsAwareInterface;
 
 class FixtureInstantiator {
 
-  private RunOptions $globalOptions;
+  private RunOptions $runOptions;
 
-  private RunContextValidator $validator;
+  private ?RunContextValidator $runContextValidator;
 
-  public function __construct(array|RunOptions $global_options, RunContextValidator $validator) {
-    $this->globalOptions = $global_options instanceof RunOptions
-      ? $global_options
-      : RunOptions::fromArray($global_options);
-    $this->validator = $validator;
+  public function __construct(RunOptions $run_options, ?RunContextValidator $run_context_validator = NULL) {
+    $this->runOptions = $run_options;
+    $this->runContextValidator = $run_context_validator;
   }
 
   /**
@@ -47,18 +47,14 @@ class FixtureInstantiator {
     /**
      * Handle auto-wiring of fixture properties.
      */
-    if (property_exists($fixture, 'fixture')) {
-      $fixture->fixture = $definition;
+    if ($fixture instanceof FixtureDefinitionAwareInterface) {
+      $fixture->setFixtureDefinition($definition);
     }
-    if (property_exists($fixture, 'options')) {
-      $fixture->options = $this->globalOptions;
+    if ($fixture instanceof RunContextAwareInterface) {
+      $fixture->setRunContext(new RunContext($definition['id'], $store, $this->runContextValidator));
     }
-    if (property_exists($fixture, 'runContext')) {
-      $fixture->runContext = new RunContext($definition['id'], $store, $this->validator);
-    }
-
-    if ($fixture instanceof InitializableFixtureInterface) {
-      $fixture->initialize();
+    if ($fixture instanceof RunOptionsAwareInterface) {
+      $fixture->setRunOptions($this->runOptions);
     }
 
     return $fixture;

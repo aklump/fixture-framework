@@ -86,9 +86,19 @@ You can override `onSuccess` and `onFailure` to provide custom feedback.
 
 When using `AbstractFixture`, or the respective traits, the following properties are automatically injected into the fixture instance by the `FixtureRunner`:
 
-- `$this->fixture`: (array) Contains the fixture's metadata (id, weight, tags, etc.).
-- `$this->runContext`: (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
-- `$this->options`: (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
+- `$this->fixture()` (or `$this->fixture` for BC): (array) Contains the fixture's metadata (id, weight, tags, etc.).
+- `$this->context()` (or `$this->runContext` for BC): (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
+- `$this->options()` (or `$this->options` for BC): (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
+
+#### Auto-wiring via Interfaces
+
+Auto-wiring is triggered by the implementation of specific capability interfaces:
+
+- `FixtureDefinitionAwareInterface`
+- `RunOptionsAwareInterface`
+- `RunContextAwareInterface`
+
+The `AbstractFixture` class implements all of these interfaces. If you create a custom fixture that does not extend `AbstractFixture`, you must implement these interfaces to receive injection.
 
 #### Accessing Metadata via `FixtureMetadataTrait`
 
@@ -96,7 +106,7 @@ If you want your fixture to have access to its own metadata (for example, to get
 
 {{ file.FixtureMetadataTrait_php|fenced }}
 
-This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `__invoke()`.
+This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects the `FixtureDefinitionAwareInterface` (which `AbstractFixture` implements) and populates it with the fixture's metadata record before calling `__invoke()`.
 
 {{ snippet.get_fixture_id|fenced }}
 

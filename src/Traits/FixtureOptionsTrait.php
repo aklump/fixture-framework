@@ -21,7 +21,18 @@ trait FixtureOptionsTrait {
    * Global runtime options passed into FixtureRunner.
    *
    * @var \AKlump\FixtureFramework\RunOptions
-   */
+   *
+   * @deprecated Use options() instead, this property will be made private in a
+   * * future version.
+ */
   public RunOptions $options;
+
+  public function setRunOptions(RunOptions $options): void {
+    $this->options = $options;
+  }
+
+  public function options(): RunOptions {
+    return $this->options;
+  }
 
 }

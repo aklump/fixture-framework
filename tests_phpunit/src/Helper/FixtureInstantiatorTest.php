@@ -79,8 +79,48 @@ class FixtureInstantiatorTest extends TestCase {
     $fixture = ($this->instantiator)($definition, $this->store);
 
     $this->assertEquals('custom_a', $fixture->id());
-    // AbstractFixture uses FixtureMetadataTrait which has a public $fixture property
+    // AbstractFixture implements FixtureDefinitionAwareInterface and uses FixtureMetadataTrait which has a public $fixture property
     $this->assertEquals($definition, $fixture->fixture);
+    $this->assertEquals($definition, $fixture->fixture());
+  }
+
+  public function testPublicPropertiesAreNotWiredWithoutInterfaces() {
+    $class = new class implements \AKlump\FixtureFramework\FixtureInterface {
+      public array $fixture = [];
+      public RunOptions $options;
+      public \AKlump\FixtureFramework\Runtime\RunContext $runContext;
+      public function id(): string { return 'test'; }
+      public function __invoke(): void {}
+      public function onSuccess(bool $silent = FALSE) {}
+      public function onFailure(\AKlump\FixtureFramework\Exception\FixtureException $e, bool $silent = FALSE) {}
+    };
+    $className = get_class($class);
+    $definition = ['class' => $className, 'id' => 'test'];
+    $fixture = ($this->instantiator)($definition, $this->store);
+
+    $this->assertEmpty($fixture->fixture);
+    $this->assertFalse(isset($fixture->options));
+    $this->assertFalse(isset($fixture->runContext));
+  }
+
+  public function testInitializeIsCalledAfterWiring() {
+    $class = new class extends \AKlump\FixtureFramework\AbstractFixture {
+      public bool $initialized = false;
+      public bool $wiredBeforeInitialize = false;
+      public function __invoke(): void {}
+      public function initialize(): void {
+        $this->initialized = true;
+        if (isset($this->fixture) && isset($this->options) && isset($this->runContext)) {
+          $this->wiredBeforeInitialize = true;
+        }
+      }
+    };
+    $className = get_class($class);
+    $definition = ['class' => $className, 'id' => 'test_init'];
+    $fixture = ($this->instantiator)($definition, $this->store);
+
+    $this->assertTrue($fixture->initialized);
+    $this->assertTrue($fixture->wiredBeforeInitialize);
   }
 
   public function testRunContextPopulation() {

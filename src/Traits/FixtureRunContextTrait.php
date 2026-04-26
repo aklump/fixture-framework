@@ -12,6 +12,20 @@ use AKlump\FixtureFramework\Runtime\RunContext;
  */
 trait FixtureRunContextTrait {
 
+  /**
+   * @var \AKlump\FixtureFramework\Runtime\RunContext
+   *
+   * @deprecated Use context() instead, this property will be made private in a
+   * * future version.
+ */
   public RunContext $runContext;
+
+  public function setRunContext(RunContext $run_context): void {
+    $this->runContext = $run_context;
+  }
+
+  public function context(): RunContext {
+    return $this->runContext;
+  }
 
 }

@@ -14,7 +14,18 @@ trait FixtureMetadataTrait {
    * The fixture metadata record as discovered by FixtureDiscovery.
    *
    * @var array
+   *
+   * @deprecated Use fixture() instead, this property will be made private in a
+   * future version.
    */
   public array $fixture;
+
+  public function setFixtureDefinition(array $definition): void {
+    $this->fixture = $definition;
+  }
+
+  public function fixture(): array {
+    return $this->fixture;
+  }
 
 }
