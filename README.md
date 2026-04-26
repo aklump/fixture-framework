@@ -164,9 +164,19 @@ class CustomOutputFixture extends AbstractFixture {
 
 When using `AbstractFixture`, or the respective traits, the following properties are automatically injected into the fixture instance by the `FixtureRunner`:
 
-- `$this->fixture`: (array) Contains the fixture's metadata (id, weight, tags, etc.).
-- `$this->runContext`: (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
-- `$this->options`: (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
+- `$this->fixture()` (or `$this->fixture` for BC): (array) Contains the fixture's metadata (id, weight, tags, etc.).
+- `$this->context()` (or `$this->runContext` for BC): (`\AKlump\FixtureFramework\RunContext`) A shared mutable runtime output across all fixtures in a single run.
+- `$this->options()` (or `$this->options` for BC): (`\AKlump\FixtureFramework\RunOptions`) A read-only API for the global run options.
+
+#### Auto-wiring via Interfaces
+
+Auto-wiring is triggered by the implementation of specific capability interfaces:
+
+- `FixtureDefinitionAwareInterface`
+- `RunOptionsAwareInterface`
+- `RunContextAwareInterface`
+
+The `AbstractFixture` class implements all of these interfaces. If you create a custom fixture that does not extend `AbstractFixture`, you must implement these interfaces to receive injection.
 
 #### Accessing Metadata via `FixtureMetadataTrait`
 
@@ -191,13 +201,24 @@ trait FixtureMetadataTrait {
    * The fixture metadata record as discovered by FixtureDiscovery.
    *
    * @var array
+   *
+   * @deprecated Use fixture() instead, this property will be made private in a
+   * future version.
    */
   public array $fixture;
+
+  public function setFixtureDefinition(array $definition): void {
+    $this->fixture = $definition;
+  }
+
+  public function fixture(): array {
+    return $this->fixture;
+  }
 
 }
 ```
 
-This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects this property and populates it with the fixture's metadata record before calling `__invoke()`.
+This trait adds a public `array $fixture` property to your class. The `FixtureRunner` detects the `FixtureDefinitionAwareInterface` (which `AbstractFixture` implements) and populates it with the fixture's metadata record before calling `__invoke()`.
 
 ```php
   public function __invoke(): void {
@@ -319,6 +340,9 @@ To run your fixtures, create a script such as `bin/setup-fixtures.php` that boot
 ```php
 #!/usr/bin/env php
 <?php
+
+use AKlump\FixtureFramework\Runtime\RunOptions;
+
 $vendor_dir = __DIR__ . '/../vendor';
 require_once $vendor_dir . '/autoload.php';
 
@@ -343,13 +367,19 @@ catch (Exception $e) {
 }
 
 try {
-  $options = [
+  $run_options_validator = new \AKlump\FixtureFramework\Runtime\RunOptionsValidator();
+  $run_options = new RunOptions([
       'env' => 'test',
       'url' => 'https://website.com/',
       'drush' => 'lando nxdb_drush',
-  ];
-  $validator = new \AKlump\FixtureFramework\Runtime\RunContextValidator();
-  $fixtures = (new \AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder($options, $validator))($definitions);
+      $run_options_validator,
+  ]);
+
+  $run_context_validator = new \AKlump\FixtureFramework\Runtime\RunContextValidator();
+  $instantiator = new \AKlump\FixtureFramework\Runtime\FixtureInstantiator($run_options, $run_context_validator);
+
+  $fixtures = (new \AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder($instantiator))($definitions);
+
   $runner = new \AKlump\FixtureFramework\Runtime\FixtureRunner($fixtures);
   $runner->run($silent);
 }
