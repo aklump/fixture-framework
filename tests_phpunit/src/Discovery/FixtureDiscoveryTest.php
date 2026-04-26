@@ -92,4 +92,15 @@ class FixtureDiscoveryTest extends TestCase {
     $this->expectOutputString('');
     $discovery->discover(['AKlump\FixtureFramework\Tests\Fixtures\\']);
   }
+
+  public function testDescriptionIsExtracted() {
+    $discovery = new FixtureDiscovery(__DIR__ . '/../../../vendor');
+    $fixtures = $discovery->discover(['AKlump\FixtureFramework\Tests\Fixtures\\']);
+
+    $this->assertArrayHasKey('fixture_with_description', $fixtures);
+    $this->assertEquals('This is a test description', $fixtures['fixture_with_description']['description']);
+
+    $this->assertArrayHasKey('fixture_a', $fixtures);
+    $this->assertEquals('', $fixtures['fixture_a']['description']);
+  }
 }

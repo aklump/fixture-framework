@@ -9,6 +9,7 @@ class Fixture {
 
   public function __construct(
     public string $id,
+    public string $description = "",
     public int $weight = 0,
     public array $after = [],
     public array $before = [],

@@ -4,7 +4,12 @@ use AKlump\FixtureFramework\AbstractFixture;
 use AKlump\FixtureFramework\Fixture;
 
 // <snippet id="fixture_attributes">
-#[Fixture(id: 'example_fixture', weight: -10, after: ['base_schema'])]
+#[Fixture(
+  id: 'example_fixture',
+  description: 'An example fixture that demonstrates metadata.',
+  weight: -10,
+  after: ['base_schema']
+)]
 class ExampleFixture extends AbstractFixture {
 
   // </snippet>

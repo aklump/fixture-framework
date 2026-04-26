@@ -91,6 +91,7 @@ class FixtureDiscovery {
       $fixtures[$id] = [
         'id' => $id,
         'class' => $class,
+        'description' => $fixture_attribute->description,
         'weight' => $fixture_attribute->weight,
         'after' => $after,
         'before' => $before,

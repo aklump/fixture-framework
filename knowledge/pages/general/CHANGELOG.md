@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added optional `description` metadata to the `Fixture` attribute for short, human-readable fixture summaries.
+
 ### Changed
 
 - Fixture auto-wiring is now interface-driven.
