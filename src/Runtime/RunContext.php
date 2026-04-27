@@ -8,16 +8,16 @@ class RunContext {
 
   private string $fixtureId;
 
-  private RunContextStore $store;
+  private RunContextStoreInterface $store;
 
   private RunContextValidator $validator;
 
   public function __construct(
-    string $fixtureId,
-    RunContextStore $store,
+    string $fixture_id,
+    RunContextStoreInterface $store,
     ?RunContextValidator $validator = NULL,
   ) {
-    $this->fixtureId = $fixtureId;
+    $this->fixtureId = $fixture_id;
     $this->store = $store;
     $this->validator = $validator ?? new RunContextValidator();
   }

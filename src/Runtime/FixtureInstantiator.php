@@ -22,7 +22,7 @@ class FixtureInstantiator {
   /**
    * @throws \ReflectionException
    */
-  public function __invoke(array $definition, RunContextStore $store): FixtureInterface {
+  public function __invoke(array $definition, RunContextStoreInterface $store): FixtureInterface {
     /**
      * Validate the fixture definition.
      */

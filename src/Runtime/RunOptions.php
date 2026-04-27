@@ -11,7 +11,7 @@ class RunOptions {
 
   private array $options;
 
-  private RunOptionsValidator $validator;
+  protected RunOptionsValidator $validator;
 
   public function __construct(array $options = [], RunOptionsValidator $validator = NULL) {
     $this->validator = $validator ?? new RunOptionsValidator();
