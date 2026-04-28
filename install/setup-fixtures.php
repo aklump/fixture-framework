@@ -4,6 +4,7 @@
 use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
 use AKlump\FixtureFramework\Runtime\FixtureInstantiator;
 use AKlump\FixtureFramework\Runtime\FixtureRunner;
+use AKlump\FixtureFramework\Runtime\RunContextStore;
 use AKlump\FixtureFramework\Runtime\RunContextValidator;
 use AKlump\FixtureFramework\Runtime\RunOptions;
 use AKlump\FixtureFramework\Runtime\RunOptionsValidator;
@@ -62,10 +63,16 @@ try {
   $instantiator = new FixtureInstantiator($run_options, $run_context_validator);
 
   /**
+   * @var \AKlump\FixtureFramework\Runtime\RunContextStoreInterface This class
+   * handles the storage of the runtime context.
+   */
+  $store = new RunContextStore();
+
+  /**
    * @var \AKlump\FixtureFramework\FixtureInterface[] $fixtures The list of
    * fixtures to run as objects.
    */
-  $fixtures = (new FixtureCollectionBuilder($instantiator))($definitions);
+  $fixtures = (new FixtureCollectionBuilder($instantiator))($definitions, $store);
 
   /**
    * @var \AKlump\FixtureFramework\Runtime\FixtureRunner The class in charge of

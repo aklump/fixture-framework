@@ -39,6 +39,20 @@ class FixtureRunnerTest extends TestCase {
     return $builder($fixture_index);
   }
 
+  public function testCollectionBuilderUsesCustomStore() {
+    $store = $this->createMock(\AKlump\FixtureFramework\Runtime\RunContextStoreInterface::class);
+    $instantiator = $this->createMock(\AKlump\FixtureFramework\Runtime\FixtureInstantiator::class);
+
+    $definition = ['id' => 'foo', 'class' => FixtureA::class];
+    $instantiator->expects($this->once())
+      ->method('__invoke')
+      ->with($definition, $store)
+      ->willReturn($this->createMock(FixtureInterface::class));
+
+    $builder = new FixtureCollectionBuilder($instantiator);
+    $builder([$definition], $store);
+  }
+
   public function testOnSuccessAndOnFailure() {
     MockFixture::$successCount = 0;
     MockFixture::$failureCount = 0;

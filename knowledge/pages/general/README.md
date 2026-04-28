@@ -140,6 +140,16 @@ The `RunContext` is a shared, mutable data store that persists throughout a sing
 - **Strict Namespacing**: For data integrity, a fixture may only `set()` keys that are prefixed with its own fixture ID (e.g., `my_fixture.entity_id`). This prevents fixtures from accidentally overwriting each other's data.
 - **Data Retrieval**: Use `get()` to retrieve values, `has()` to check for existence, or `require()` to throw an exception if a critical piece of shared data is missing.
 
+#### Run Context Storage
+
+By default, the `RunContext` uses an in-memory store. However, you can provide a custom storage implementation (e.g., file-based or SQLite) by passing a `RunContextStoreInterface` to the `FixtureCollectionBuilder::__invoke()`.
+
+See [Fixture Stores](fixture_stores.md) for more information.
+
+- `RunContextStore`: The default in-memory store.
+- `RunContextStoreFile`: Persists context to a serialized file.
+- `RunContextStoreSqLite`: Persists context to an SQLite database.
+
 {{ snippet.run_context_php|fenced }}
 
 #### Global Run Options

@@ -6,6 +6,7 @@
   pages:
     - '**/README.md'
     - '**/CHANGELOG.md'
+    - '**/fixture_stores.md'
 -
   format: website
   output: ../docs

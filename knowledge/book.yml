@@ -1,4 +1,4 @@
-title: Fixture Framework
+title: 'Fixture Framework'
 uuid: 1735d351-b9aa-4012-8f59-91cd9f8f7504
 chapters:
   -
@@ -7,3 +7,4 @@ chapters:
     pages:
       - readme
       - changelog
+      - fixture_stores
