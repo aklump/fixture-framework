@@ -326,8 +326,8 @@ trait FixtureMetadataTrait {
 class FixtureA extends \AKlump\FixtureFramework\AbstractFixture {
 
   public function __invoke(): void {
-    $this-&gt;runContext-&gt;set('fixture_a.required_data', 'lorem');
-    $this-&gt;runContext-&gt;set('fixture_a.optional_data', 'ipsum');
+    $this-&gt;context()-&gt;set('fixture_a.required_data', 'lorem');
+    $this-&gt;context()-&gt;set('fixture_a.optional_data', 'ipsum');
   }
 }
 
@@ -336,10 +336,10 @@ class FixtureB extends \AKlump\FixtureFramework\AbstractFixture {
 
   public function __invoke(): void {
     // This will throw an exception if the required data is not set.
-    $lorem = $this-&gt;runContext-&gt;require('fixture_a.required_data');
+    $lorem = $this-&gt;context()-&gt;require('fixture_a.required_data');
 
-    if ($this-&gt;runContext-&gt;has('fixture_a.optional_data')) {
-      $ipsum = $this-&gt;runContext-&gt;get('fixture_a.optional_data');
+    if ($this-&gt;context()-&gt;has('fixture_a.optional_data')) {
+      $ipsum = $this-&gt;context()-&gt;get('fixture_a.optional_data');
       // Do something with $ipsum, which may be an empty string. the `has()`
       // method only checks for existence, not value.
     }
@@ -501,7 +501,7 @@ catch (\Exception $e) {
               Version:
         <strong>0.0.13</strong>
         &bull;
-                    Last Update: <strong>4/27/2026</strong>
+                    Last Update: <strong>4/28/2026</strong>
           </div>
   </footer>
 
