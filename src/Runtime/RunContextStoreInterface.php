@@ -40,4 +40,6 @@ interface RunContextStoreInterface {
    */
   public function all(): array;
 
+  public function remove(string $key): void;
+
 }

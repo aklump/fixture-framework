@@ -35,6 +35,10 @@ class RunContext {
     return $this->store->has($key);
   }
 
+  public function remove(string $key): void {
+    $this->store->remove($key);
+  }
+
   public function require(string $key): mixed {
     if (!$this->has($key)) {
       throw new MissingRunContextKeyException($this->fixtureId, $key);

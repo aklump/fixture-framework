@@ -103,4 +103,13 @@ class RunContextStoreSqLite implements RunContextStoreInterface {
     return $this->cache;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function remove(string $key): void {
+    $statement = $this->pdo->prepare("DELETE FROM \"$this->tableName\" WHERE \"key\" = :key");
+    $statement->execute([':key' => $key]);
+    unset($this->cache[$key]);
+  }
+
 }

@@ -39,4 +39,11 @@ class RunContextStore implements RunContextStoreInterface {
     return $this->data;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function remove(string $key): void {
+    unset($this->data[$key]);
+  }
+
 }

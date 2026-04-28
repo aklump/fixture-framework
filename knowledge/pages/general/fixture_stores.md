@@ -15,6 +15,7 @@ This interface defines the methods required for any run context storage implemen
 - `get(string $key, mixed $default = null): mixed`: Retrieves a value by key, or returns the default if not found.
 - `has(string $key): bool`: Checks if a key exists in the store.
 - `all(): array`: Retrieves all stored key-value pairs.
+- `remove(string $key): void`: Removes a key and its value from the store.
 
 ## Available Implementations
 

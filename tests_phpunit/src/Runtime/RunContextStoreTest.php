@@ -46,4 +46,13 @@ class RunContextStoreTest extends TestCase {
     $store->set('key1', 'value2');
   }
 
+  public function testRemove() {
+    $store = new RunContextStore();
+    $store->set('key1', 'value1');
+    $this->assertTrue($store->has('key1'));
+    $store->remove('key1');
+    $this->assertFalse($store->has('key1'));
+    $this->assertNull($store->get('key1'));
+  }
+
 }

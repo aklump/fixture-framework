@@ -80,4 +80,17 @@ class RunContextStoreSqLiteTest extends TestCase {
     $this->assertEquals($data, $store->get('key1'));
   }
 
+  public function testRemove() {
+    $store = new RunContextStoreSqLite($this->dbPath);
+    $store->set('key1', 'value1');
+    $this->assertTrue($store->has('key1'));
+    $store->remove('key1');
+    $this->assertFalse($store->has('key1'));
+    $this->assertNull($store->get('key1'));
+
+    // Test persistence
+    $store_two = new RunContextStoreSqLite($this->dbPath);
+    $this->assertFalse($store_two->has('key1'));
+  }
+
 }

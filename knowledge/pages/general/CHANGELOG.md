@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `RunContextStoreInterface::remove(string $key): void` and implemented it in all storage classes.
 - `RunContextStoreInterface` and implementations (`RunContextStore`, `RunContextStoreFile`, `RunContextStoreSqLite`) for flexible runtime context storage. See [Fixture Stores](fixture_stores.md).
 - `FixtureCollectionBuilder::__invoke()` now accepts an optional `RunContextStoreInterface $store` as the second parameter.
 

@@ -91,4 +91,13 @@ class RunContextStoreFile implements RunContextStoreInterface {
     return $this->cache;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function remove(string $key): void {
+    $this->load();
+    unset($this->cache[$key]);
+    $this->save();
+  }
+
 }
