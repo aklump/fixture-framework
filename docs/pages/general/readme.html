@@ -4,9 +4,9 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.12">
-      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.12">
-      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.12">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.13">
+      <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.13">
+      <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.13">
         <title>Fixture Framework</title>
   </head>
 <body class="my-5">
@@ -33,7 +33,7 @@
       </div>
       <div class="header__tags me-3">  </div>
       <div class="header__page-numbers flex-shrink-1">1
-        / 2</div>
+        / 3</div>
     </div>
   </div>
 </header>
@@ -311,6 +311,14 @@ trait FixtureMetadataTrait {
 <li><strong>Strict Namespacing</strong>: For data integrity, a fixture may only <code>set()</code> keys that are prefixed with its own fixture ID (e.g., <code>my_fixture.entity_id</code>). This prevents fixtures from accidentally overwriting each other's data.</li>
 <li><strong>Data Retrieval</strong>: Use <code>get()</code> to retrieve values, <code>has()</code> to check for existence, or <code>require()</code> to throw an exception if a critical piece of shared data is missing.</li>
 </ul>
+<h4>Run Context Storage</h4>
+<p>By default, the <code>RunContext</code> uses an in-memory store. However, you can provide a custom storage implementation (e.g., file-based or SQLite) by passing a <code>RunContextStoreInterface</code> to the <code>FixtureCollectionBuilder::__invoke()</code>.</p>
+<p>See <a href="fixture_stores.md">Fixture Stores</a> for more information.</p>
+<ul>
+<li><code>RunContextStore</code>: The default in-memory store.</li>
+<li><code>RunContextStoreFile</code>: Persists context to a serialized file.</li>
+<li><code>RunContextStoreSqLite</code>: Persists context to an SQLite database.</li>
+</ul>
 <p><strong>File:</strong> <code>run_context.php</code></p>
 <pre><code class="php">&lt;?php
 
@@ -400,6 +408,7 @@ class RunOptionsValidator extends \AKlump\FixtureFramework\Runtime\RunOptionsVal
 use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
 use AKlump\FixtureFramework\Runtime\FixtureInstantiator;
 use AKlump\FixtureFramework\Runtime\FixtureRunner;
+use AKlump\FixtureFramework\Runtime\RunContextStore;
 use AKlump\FixtureFramework\Runtime\RunContextValidator;
 use AKlump\FixtureFramework\Runtime\RunOptions;
 use AKlump\FixtureFramework\Runtime\RunOptionsValidator;
@@ -458,10 +467,16 @@ try {
   $instantiator = new FixtureInstantiator($run_options, $run_context_validator);
 
   /**
+   * @var \AKlump\FixtureFramework\Runtime\RunContextStoreInterface This class
+   * handles the storage of the runtime context.
+   */
+  $store = new RunContextStore();
+
+  /**
    * @var \AKlump\FixtureFramework\FixtureInterface[] $fixtures The list of
    * fixtures to run as objects.
    */
-  $fixtures = (new FixtureCollectionBuilder($instantiator))($definitions);
+  $fixtures = (new FixtureCollectionBuilder($instantiator))($definitions, $store);
 
   /**
    * @var \AKlump\FixtureFramework\Runtime\FixtureRunner The class in charge of
@@ -484,9 +499,9 @@ catch (\Exception $e) {
   <footer class="footer d-flex justify-content-center">
     <div class="flex-column justify-content-center">
               Version:
-        <strong>0.0.12</strong>
+        <strong>0.0.13</strong>
         &bull;
-                    Last Update: <strong>4/26/2026</strong>
+                    Last Update: <strong>4/27/2026</strong>
           </div>
   </footer>
 
@@ -551,6 +566,13 @@ catch (\Exception $e) {
               bg-info rounded-pill badge-sm"></span></a>
     </li>
   
+                                    <li data-page="fixture_stores" value="3">
+      <a class="js-page-link" href="fixture_stores.html">Fixture Stores<span
+              class="js-search-score
+              badge
+              bg-info rounded-pill badge-sm"></span></a>
+    </li>
+  
                               </ol>
       </div>
         
@@ -563,6 +585,10 @@ catch (\Exception $e) {
   
                                 <li data-page="changelog" value="2">
       <a class="js-page-link" href="changelog.html">Changelog</a>
+    </li>
+  
+                                <li data-page="fixture_stores" value="3">
+      <a class="js-page-link" href="fixture_stores.html">Fixture Stores</a>
     </li>
   
                   </ol>
@@ -587,15 +613,17 @@ catch (\Exception $e) {
                  data-tags="[]" href="readme.html">Fixture Framework</a>
                                                 <a class="list-group-item list-group-item-action"
                  data-tags="[]" href="changelog.html">Changelog</a>
+                                                <a class="list-group-item list-group-item-action"
+                 data-tags="[]" href="fixture_stores.html">Fixture Stores</a>
                               </ul>
       </div>
     </div>
   </div>
 </div>
 
-  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.12"></script>
-  <script src="../../dist/lunr.js?ver=0.0.12"></script>
-  <script src="../../dist/knowledge.min.js?ver=0.0.12"></script>
+  <script src="../../dist/node_modules/bootstrap/dist/js/bootstrap.min.js?ver=0.0.13"></script>
+  <script src="../../dist/lunr.js?ver=0.0.13"></script>
+  <script src="../../dist/knowledge.min.js?ver=0.0.13"></script>
 
 </body>
 </html>

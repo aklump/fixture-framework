@@ -313,6 +313,16 @@ The `RunContext` is a shared, mutable data store that persists throughout a sing
 - **Strict Namespacing**: For data integrity, a fixture may only `set()` keys that are prefixed with its own fixture ID (e.g., `my_fixture.entity_id`). This prevents fixtures from accidentally overwriting each other's data.
 - **Data Retrieval**: Use `get()` to retrieve values, `has()` to check for existence, or `require()` to throw an exception if a critical piece of shared data is missing.
 
+#### Run Context Storage
+
+By default, the `RunContext` uses an in-memory store. However, you can provide a custom storage implementation (e.g., file-based or SQLite) by passing a `RunContextStoreInterface` to the `FixtureCollectionBuilder::__invoke()`.
+
+See [Fixture Stores](fixture_stores.md) for more information.
+
+- `RunContextStore`: The default in-memory store.
+- `RunContextStoreFile`: Persists context to a serialized file.
+- `RunContextStoreSqLite`: Persists context to an SQLite database.
+
 **File:** `run_context.php`
 
 ```php
@@ -424,6 +434,7 @@ To run your fixtures, create a script such as `bin/setup-fixtures.php` that boot
 use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
 use AKlump\FixtureFramework\Runtime\FixtureInstantiator;
 use AKlump\FixtureFramework\Runtime\FixtureRunner;
+use AKlump\FixtureFramework\Runtime\RunContextStore;
 use AKlump\FixtureFramework\Runtime\RunContextValidator;
 use AKlump\FixtureFramework\Runtime\RunOptions;
 use AKlump\FixtureFramework\Runtime\RunOptionsValidator;
@@ -482,10 +493,16 @@ try {
   $instantiator = new FixtureInstantiator($run_options, $run_context_validator);
 
   /**
+   * @var \AKlump\FixtureFramework\Runtime\RunContextStoreInterface This class
+   * handles the storage of the runtime context.
+   */
+  $store = new RunContextStore();
+
+  /**
    * @var \AKlump\FixtureFramework\FixtureInterface[] $fixtures The list of
    * fixtures to run as objects.
    */
-  $fixtures = (new FixtureCollectionBuilder($instantiator))($definitions);
+  $fixtures = (new FixtureCollectionBuilder($instantiator))($definitions, $store);
 
   /**
    * @var \AKlump\FixtureFramework\Runtime\FixtureRunner The class in charge of
