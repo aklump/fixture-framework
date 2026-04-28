@@ -7,7 +7,7 @@
       <link rel="stylesheet" href="../../dist/node_modules/bootstrap/dist/css/bootstrap.css?ver=0.0.13">
       <link rel="stylesheet" href="../../dist/dist/bootstrap_theme.css?ver=0.0.13">
       <link rel="stylesheet" href="../../dist/node_modules/bootstrap-icons/font/bootstrap-icons.min.css?ver=0.0.13">
-        <title>Changelog | Fixture Framework</title>
+        <title>Fixture Stores | Fixture Framework</title>
   </head>
 <body class="my-5">
 
@@ -32,7 +32,7 @@
 
       </div>
       <div class="header__tags me-3">  </div>
-      <div class="header__page-numbers flex-shrink-1">2
+      <div class="header__page-numbers flex-shrink-1">3
         / 3</div>
     </div>
   </div>
@@ -41,98 +41,57 @@
 <main class="container-md flex-column">
   <div class="row mb-5 pt-5">
     <article class="col">
-      <h1 class="mb-4 text-primary">Changelog</h1>
-      <p>All notable changes to this project will be documented in this file.</p>
-<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
-and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2>[Unreleased]</h2>
-<h3>Added</h3>
+      <h1 class="mb-4 text-primary">Fixture Stores</h1>
+      <p>The Fixture Framework uses storage classes to persist the <code>RunContext</code> across different stages of a fixture run. All storage classes must implement the <code>\AKlump\FixtureFramework\Runtime\RunContextStoreInterface</code>.</p>
+<h2>RunContextStoreInterface</h2>
+<p>This interface defines the methods required for any run context storage implementation.</p>
 <ul>
-<li>Added <code>RunContextStoreInterface::remove(string $key): void</code> and implemented it in all storage classes.</li>
-<li><code>RunContextStoreInterface</code> and implementations (<code>RunContextStore</code>, <code>RunContextStoreFile</code>, <code>RunContextStoreSqLite</code>) for flexible runtime context storage. See <a href="fixture_stores.md">Fixture Stores</a>.</li>
-<li><code>FixtureCollectionBuilder::__invoke()</code> now accepts an optional <code>RunContextStoreInterface $store</code> as the second parameter.</li>
+<li><code>set(string $key, mixed $value): void</code>: Stores a value with a given key. Throws <code>\AKlump\FixtureFramework\Exception\RunContextKeyAlreadyExistsException</code> if the key is already set.</li>
+<li><code>get(string $key, mixed $default = null): mixed</code>: Retrieves a value by key, or returns the default if not found.</li>
+<li><code>has(string $key): bool</code>: Checks if a key exists in the store.</li>
+<li><code>all(): array</code>: Retrieves all stored key-value pairs.</li>
+<li><code>remove(string $key): void</code>: Removes a key and its value from the store.</li>
 </ul>
-<h3>Changed</h3>
-<ul>
-<li>Updated <code>install/setup-fixtures.php</code> to explicitly instantiate and pass a <code>RunContextStore</code>.</li>
-</ul>
-<h2>[0.0.11] - 2026-04-26</h2>
-<h3>Added</h3>
-<ul>
-<li>Added <code>\AKlump\FixtureFramework\FixtureInterface::description</code> and optional <code>description</code> metadata to the <code>Fixture</code> attribute for short, human-readable fixture summaries.</li>
-</ul>
-<h3>Changed</h3>
-<ul>
-<li>Fixture auto-wiring is now interface-driven.</li>
-<li>Added <code>FixtureDefinitionAwareInterface</code>, <code>RunOptionsAwareInterface</code>, and <code>RunContextAwareInterface</code>.</li>
-<li>Existing traits now provide setter/accessor methods.</li>
-<li>Fixture instantiation dependencies (<code>RunOptions</code>, <code>RunContextValidator</code>) have moved into <code>FixtureInstantiator</code> constructor.</li>
-<li><code>FixtureInstantiator::__invoke()</code> now focuses on instantiating a single fixture definition.</li>
-<li><code>FixtureCollectionBuilder</code> now receives a pre-configured <code>FixtureInstantiator</code>.</li>
-<li><code>FixtureCollectionBuilder</code> now owns the creation of the shared <code>RunContextStore</code>.</li>
-<li><code>RunOptions</code> constructor now has optional <code>$options</code> and <code>$validator</code> parameters.</li>
-</ul>
-<h3>Migration Guide</h3>
-<h4><code>FixtureInterface</code></h4>
-<p>If your fixture implements <code>FixtureInterface</code> directly (and does not extend <code>AbstractFixture</code>), you must now implement the <code>description(): string</code> method.</p>
-<h4>Fixture auto-wiring</h4>
-<p>Fixture auto-wiring is now based on explicit capability interfaces instead of public property detection.</p>
-<p>If your fixture extends <code>AbstractFixture</code>, no immediate change is required. The existing public properties still work, and new accessor methods are available:</p>
-<ul>
-<li><code>$this-&gt;fixture()</code> instead of <code>$this-&gt;fixture</code></li>
-<li><code>$this-&gt;options()</code> instead of <code>$this-&gt;options</code></li>
-<li><code>$this-&gt;context()</code> instead of <code>$this-&gt;runContext</code></li>
-</ul>
-<p>If your fixture does not extend <code>AbstractFixture</code> but previously declared public properties such as <code>$options</code>, <code>$fixture</code>, or <code>$runContext</code> to receive injection, update it to implement the appropriate interface:</p>
-<ul>
-<li><code>FixtureDefinitionAwareInterface</code></li>
-<li><code>RunOptionsAwareInterface</code></li>
-<li><code>RunContextAwareInterface</code></li>
-</ul>
-<h4><code>FixtureInstantiator</code></h4>
-<p>If you were manually invoking the instantiator, update your code as follows:</p>
-<pre><code class="php">// Before
-$instantiator = new FixtureInstantiator();
-$fixture = $instantiator($definition, $options, $store, $validator);
+<h2>Available Implementations</h2>
+<h3>RunContextStore (In-Memory)</h3>
+<p>This is the default implementation. It stores data in a PHP array in memory. It is fast but non-persistent across separate PHP processes.</p>
+<pre><code class="php">use AKlump\FixtureFramework\Runtime\RunContextStore;
 
-// After
-$instantiator = new FixtureInstantiator($options, $validator);
-$fixture = $instantiator($definition, $store);
+$store = new RunContextStore();
 </code></pre>
-<h4><code>FixtureCollectionBuilder</code></h4>
-<p>Update <code>FixtureCollectionBuilder</code> construction to pass a pre-configured <code>FixtureInstantiator</code>:</p>
-<pre><code class="php">// Before
-$builder = new FixtureCollectionBuilder($options, $validator);
-$fixtures = $builder($definitions);
+<h3>RunContextStoreFile (File-Based)</h3>
+<p>This implementation persists the context to a serialized file. It is useful when you need to inspect the context after a run or if the run is split across multiple processes.</p>
+<pre><code class="php">use AKlump\FixtureFramework\Runtime\RunContextStoreFile;
 
-// After
-$instantiator = new FixtureInstantiator($options, $validator);
-$builder = new FixtureCollectionBuilder($instantiator);
-$fixtures = $builder($definitions);
+$store = new RunContextStoreFile('/path/to/context.serialized');
 </code></pre>
-<h2>[0.0.9] - 2026-04-17</h2>
-<h3>Changed</h3>
-<ul>
-<li>bin/setup-fixtures to bin/setup-fixtures.php</li>
-</ul>
-<h2>[0.0.8] - 2026-04-12</h2>
-<h3>Added</h3>
-<ul>
-<li>Added <code>\AKlump\FixtureFramework\FixtureInterface::id</code></li>
-<li>Added structured discovery of fixture definitions before runtime instantiation.</li>
-</ul>
-<h3>Changed</h3>
-<ul>
-<li>Fixture setup now flows through separate discovery and runtime phases</li>
-<li>Fixture identity is resolved earlier in the lifecycle @see <code>\AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder</code></li>
-<li>Shared run context is now injected during fixture instantiation.</li>
-<li>Documentation and setup examples were updated to match the new execution model.</li>
-<li>Internal classes were reorganized into <code>Discovery</code>, <code>Runtime</code>, and <code>Traits</code> namespaces.</li>
-<li>🚨BREAKING CHANGE! Replace every fixture <code>setUp()</code> method with <code>__invoke()</code>.</li>
-<li>🚨BREAKING CHANGE! If your fixture relied on lazy ID lookup, resolve the ID during instantiation instead.</li>
-<li>🚨BREAKING CHANGE! Update any code that imports or instantiates renamed classes from the old structure.</li>
-<li>🚨BREAKING CHANGE! <code>setup-runner.php</code> has changed significantly, update your setup scripts accordingly.</li>
-</ul>
+<h3>RunContextStoreSqLite (SQLite-Based)</h3>
+<p>This implementation uses an SQLite database for persistence. It is robust and handles large amounts of data efficiently.</p>
+<pre><code class="php">use AKlump\FixtureFramework\Runtime\RunContextStoreSqLite;
+
+$db_path = '/path/to/database.sqlite';
+$table_name = 'run_context'; // Optional, defaults to 'run_context'
+$store = new RunContextStoreSqLite($db_path, $table_name);
+</code></pre>
+<h2>Usage</h2>
+<p>To use a specific store, pass it as the second argument to <code>FixtureCollectionBuilder::__invoke()</code>. This is typically done in your <code>setup-fixtures.php</code> script.</p>
+<pre><code class="php">use AKlump\FixtureFramework\Runtime\FixtureCollectionBuilder;
+use AKlump\FixtureFramework\Runtime\RunContextStoreSqLite;
+
+$store = new RunContextStoreSqLite(__DIR__ . '/cache/context.sqlite');
+$builder = new FixtureCollectionBuilder();
+$fixtures = $builder($discovery, $store);
+
+// Now the runner will use the SQLite store for the RunContext.
+$runner = new FixtureRunner($fixtures, $options);
+$runner-&gt;run();
+</code></pre>
+<h2>Performance and Caching</h2>
+<p>All persistent implementations (<code>File</code> and <code>SqLite</code>) use internal memory caching. This ensures that:
+- Multiple <code>get()</code> calls for the same key only involve a single I/O operation.
+- <code>has()</code> calls populate the cache if the key exists.
+- <code>all()</code> calls are served from memory if the entire store has already been loaded.</p>
+<p>This makes it performant to use these stores even when they are persistent.</p>
     </article>
   </div>
 </main>
@@ -154,7 +113,7 @@ $fixtures = $builder($definitions);
       bi-caret-left-fill"></i> Fixture Framework</a>
   
     
-              <a href="readme.html" class="btn nav__prev-page js-nav__prev-page
+              <a href="changelog.html" class="btn nav__prev-page js-nav__prev-page
     btn-primary"><i class="bi
       bi-caret-left-fill"></i></a>
   
@@ -165,9 +124,8 @@ $fixtures = $builder($definitions);
        aria-controls="table-of-contents"><i class="bi
            bi-list-ol"></i></a>
     
-              <a href="fixture_stores.html" class="btn nav__next-page js-nav__next-page
-    btn-primary"><i class="bi bi-file-earmark"></i> Fixture Stores <i class="bi
-       bi-caret-right-fill"></i></a>
+              <span class="btn nav__next-page js-nav__next-page
+    btn-primary"></span>
   
     
               <span class="btn nav__next-chapter btn-secondary "></span>
