@@ -199,7 +199,9 @@ use AKlump\FixtureFramework\Fixture;
 class ExampleFixture extends AbstractFixture {
 
   public function __invoke(): void {
-    $fixture_id = $this->fixture()['id'];
+    $id = $this->id();
+    $description = $this->description();
+    $weight = $this->fixture()['weight'] ?? 0;
   }
 }
 ```
@@ -302,7 +304,9 @@ This trait adds a public `array $fixture` property to your class. The `FixtureRu
 
 ```php
   public function __invoke(): void {
-    $fixture_id = $this->fixture()['id'];
+    $id = $this->id();
+    $description = $this->description();
+    $weight = $this->fixture()['weight'] ?? 0;
 ```
 
 #### Run Context

@@ -215,7 +215,9 @@ use AKlump\FixtureFramework\Fixture;
 class ExampleFixture extends AbstractFixture {
 
   public function __invoke(): void {
-    $fixture_id = $this-&gt;fixture()['id'];
+    $id = $this-&gt;id();
+    $description = $this-&gt;description();
+    $weight = $this-&gt;fixture()['weight'] ?? 0;
   }
 }
 </code></pre>
@@ -302,7 +304,9 @@ trait FixtureMetadataTrait {
 </code></pre>
 <p>This trait adds a public <code>array $fixture</code> property to your class. The <code>FixtureRunner</code> detects the <code>FixtureDefinitionAwareInterface</code> (which <code>AbstractFixture</code> implements) and populates it with the fixture's metadata record before calling <code>__invoke()</code>.</p>
 <pre><code class="php">  public function __invoke(): void {
-    $fixture_id = $this-&gt;fixture()['id'];
+    $id = $this-&gt;id();
+    $description = $this-&gt;description();
+    $weight = $this-&gt;fixture()['weight'] ?? 0;
 </code></pre>
 <h4>Run Context</h4>
 <p>The <code>RunContext</code> is a shared, mutable data store that persists throughout a single execution run. It is the primary mechanism for fixtures to communicate or pass data to downstream fixtures (e.g., passing a created user's ID to a subsequent profile-creation fixture).</p>
