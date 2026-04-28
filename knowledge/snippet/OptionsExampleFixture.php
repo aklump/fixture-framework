@@ -8,9 +8,9 @@ class OptionsExampleFixture extends AbstractFixture {
 
   // <snippet id="using_options">
   public function __invoke(): void {
-    $env = $this->options->get('env');
-    $url = $this->options->require('base_url');
-    $all = $this->options->all();
+    $env = $this->options()->get('env');
+    $url = $this->options()->require('base_url');
+    $all = $this->options()->all();
     // </snippet>
   }
 }

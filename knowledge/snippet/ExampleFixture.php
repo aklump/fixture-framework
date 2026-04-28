@@ -15,7 +15,7 @@ class ExampleFixture extends AbstractFixture {
   // </snippet>
   // <snippet id="get_fixture_id">
   public function __invoke(): void {
-    $fixture_id = $this->fixture['id'];
+    $fixture_id = $this->fixture()['id'];
     // </snippet>
   }
 }

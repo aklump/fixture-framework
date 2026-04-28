@@ -199,7 +199,7 @@ use AKlump\FixtureFramework\Fixture;
 class ExampleFixture extends AbstractFixture {
 
   public function __invoke(): void {
-    $fixture_id = $this->fixture['id'];
+    $fixture_id = $this->fixture()['id'];
   }
 }
 ```
@@ -302,7 +302,7 @@ This trait adds a public `array $fixture` property to your class. The `FixtureRu
 
 ```php
   public function __invoke(): void {
-    $fixture_id = $this->fixture['id'];
+    $fixture_id = $this->fixture()['id'];
 ```
 
 #### Run Context
@@ -361,9 +361,9 @@ Run options are provided to the `FixtureRunner` as an array or a `RunOptions` ob
 
 ```php
   public function __invoke(): void {
-    $env = $this->options->get('env');
-    $url = $this->options->require('base_url');
-    $all = $this->options->all();
+    $env = $this->options()->get('env');
+    $url = $this->options()->require('base_url');
+    $all = $this->options()->all();
 ```
 
 ##### Allowing Custom Run Options

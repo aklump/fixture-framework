@@ -215,7 +215,7 @@ use AKlump\FixtureFramework\Fixture;
 class ExampleFixture extends AbstractFixture {
 
   public function __invoke(): void {
-    $fixture_id = $this-&gt;fixture['id'];
+    $fixture_id = $this-&gt;fixture()['id'];
   }
 }
 </code></pre>
@@ -302,7 +302,7 @@ trait FixtureMetadataTrait {
 </code></pre>
 <p>This trait adds a public <code>array $fixture</code> property to your class. The <code>FixtureRunner</code> detects the <code>FixtureDefinitionAwareInterface</code> (which <code>AbstractFixture</code> implements) and populates it with the fixture's metadata record before calling <code>__invoke()</code>.</p>
 <pre><code class="php">  public function __invoke(): void {
-    $fixture_id = $this-&gt;fixture['id'];
+    $fixture_id = $this-&gt;fixture()['id'];
 </code></pre>
 <h4>Run Context</h4>
 <p>The <code>RunContext</code> is a shared, mutable data store that persists throughout a single execution run. It is the primary mechanism for fixtures to communicate or pass data to downstream fixtures (e.g., passing a created user's ID to a subsequent profile-creation fixture).</p>
@@ -350,9 +350,9 @@ class FixtureB extends \AKlump\FixtureFramework\AbstractFixture {
 <p>Run options are provided to the <code>FixtureRunner</code> as an array or a <code>RunOptions</code> object. Inside a fixture, you can access them via <code>$this-&gt;options</code> which will always be an instance of <code>\AKlump\FixtureFramework\RunOptions</code>.</p>
 <p><strong>Important:</strong> Run options must only contain plain data (null, scalars, or arrays of the same). Objects, closures, and resources are not allowed unless you extend <code>\AKlump\FixtureFramework\Runtime\RunOptionsValidator</code> as show below.</p>
 <pre><code class="php">  public function __invoke(): void {
-    $env = $this-&gt;options-&gt;get('env');
-    $url = $this-&gt;options-&gt;require('base_url');
-    $all = $this-&gt;options-&gt;all();
+    $env = $this-&gt;options()-&gt;get('env');
+    $url = $this-&gt;options()-&gt;require('base_url');
+    $all = $this-&gt;options()-&gt;all();
 </code></pre>
 <h5>Allowing Custom Run Options</h5>
 <p><strong>File:</strong> <code>RunOptionsValidator.php</code></p>
